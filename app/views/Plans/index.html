@@ -1,0 +1,228 @@
+#{extends 'main.html' /}
+#{set title:'Members' /}
+#{set 'moreStyles'}
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/misc.css.scss'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/plan.css.scss'}">
+#{/set}
+
+<div class="user_management_header">
+  <div class="name">
+    ${account.name}
+  </div>
+  <div class="sections">
+    <div class="section decorate">
+      <a href="#">Plans & Billings</a>
+    </div>
+    <div class="section">
+      <a href="#">Settings</a>
+    </div>
+  </div>
+</div>
+
+<div class="account_plans_page">
+  <ul class="account_widget ">
+    <li class="plan">
+      <p>
+        <strong>Current Plan:</strong>
+        ${account.plan.description}
+      </p>
+    </li>
+    <li class="projects">
+      <p>
+        <strong>Private Schedules:</strong>
+        <span class="count">${account.schedules.size()}</span> of <span>${account.plan.schedules}</span>
+      </p>
+    </li>
+    <li class="members">
+      <p>
+        <strong>Members:</strong>
+        <span class="count">${memberCount}</span> of <span>${account.plan.members}</span>
+      </p>
+    </li>
+  </ul>
+  <div class="separator">
+    <h4></h4>
+  </div>
+  <br />
+  <div class="content">
+    <div class="header">
+      <div class="plan">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plans</div>
+      <div class="schedules">Schedules</div>
+      <div class="members">Members</div>
+    </div>
+
+    <div class="accordion" id="plans">
+      #{list items:plans, as:'plan'}
+      <div class="accordion-group">
+        <div class="accordion-heading plan_header">
+          <div class="title">
+            <h5>
+              <div class="name">${plan.description}</div>
+              <div class="price">$${plan.cost}/month</div>
+            </h5>
+          </div>
+          <div class="schedules">${plan.schedules}</div>
+          <div class="members">${plan.members}</div>
+          <div class="plan_button">
+            #{if account.plan.id == plan.id}
+              <label><i class="icon-ok"></i>&nbsp;<strong>Your Plan</strong></label>
+            #{/if}
+
+            #{else}
+              <a class="accordion-toggle btn btn-small" data-toggle="collapse"
+                 data-parent="#plans" href="#plan_${plan.id}_info"><strong>Select Plan</strong></a>
+            #{/else}
+          </div>
+        </div>
+
+        <div id="plan_${plan.id}_info" class="accordion-body collapse in">
+          <div class="accordion-inner billing_options">
+
+            <form id="billing_form_${plan.id}" accept-charset="utf-8">
+              <input type="hidden" id="account_id" name="account_id" value="${account.id}" />
+              <input type="hidden" id="plan_id" name="plan_id" value="${plan.id}" />
+
+              #{if plan.id == 1}
+              You are changing to the <strong>${plan.description}</strong> plan.
+              #{/if}
+            
+              #{else}
+              You are upgrading to the <strong>${plan.description}</strong> plan.&nbsp;&nbsp;Choose one of the following billing options:
+              <div>
+                <input class="billing_type" type="radio" id="billingTypeMonthly" name="billingType"
+                       value="1" checked /><strong>Monthly ($${plan.cost} per month)</strong>
+                <br />
+                <input class="billing_type" type="radio" id="billingTypeAnnual" name="billingType"
+                       value="2" /><strong>Annual ($${plan.getAnnualCost()} per year, for saving of $${plan.getSavingAmount()})</strong>
+              </div>
+              <br />
+              <div class="row-fluid">
+                <div class="span4">
+                  <p>
+                    <label>Name On Card</label>
+                    <input type="text" id="holderName" name="holderName" />
+                  </p>
+                  <p>
+                    <label>Country</label>
+                    <input type="text" id="country" name="country" />
+                  </p>
+                </div>
+
+                <div class="span4">
+                  <div class="row-fluid">
+                    <div class="span6">
+                        <label>Credit Card</label>
+                    </div>
+                    <div class="span6">
+                        <img src="@{'/public/images/credit_cards.png'}" alt="credit card images" />
+                    </div>
+                  </div>
+                  <div>
+                    <input type="text" id="accountNumber" name="accountNumber" />
+                  </div>
+                  <div>
+                    <label>State/Province</label>
+                    <input type="text" id="state" name="state" />
+                  </div>
+                </div>
+
+                <div class="span4">
+                  <label>Expiry Date</label>
+                  <div class="row-fluid">
+                    <div class="span4">
+                      <select id="expMonth" name="expMonth">
+                        <option value="1">01</option>
+                        <option value="2">02</option>
+                        <option value="3">03</option>
+                        <option value="4">04</option>
+                        <option value="5">05</option>
+                        <option value="6">06</option>
+                        <option value="7">07</option>
+                        <option value="8">08</option>
+                        <option value="9">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                      </select>
+                    </div>
+                    <div class="span8">
+                      <select id="expYear" name="expYear">
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>
+                        <option value="2017">2017</option>
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>
+                        <option value="2020">2020</option>
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label>Zip/Postal</label>
+                    <input type="text" id="zip" name="zip" />
+                  </div>
+                </div>
+              </div>
+              #{/else}            
+
+              <div class="row-fluid">
+                <div class="span8">
+                  <div class="pull-right">
+                    <a class="btn btn-small" data-toggle="collapse"
+                       data-parent="#plans" href="#plan_${plan.id}_info">Cancel</a>
+                  </div>
+                </div>
+                <div class="span4">
+                  <a class="btn btn-primary btn-small" href="#" onclick="changePlan(${plan.id})">Confirm Plan Change</a>
+                </div>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+      #{/list}
+    </div>
+  </div>
+</div>
+
+#{set 'moreScripts'}
+<script type="text/javascript">
+  $(function() {
+    $('.accordion-body').collapse('hide');
+  });
+
+  function changePlan(planId) {
+    console.log(planId);
+    var updateAction = #{jsAction @Plans.update(':plan_id') /};
+    $.ajax({
+      type: 'POST',
+      url: updateAction({plan_id: planId}),
+      data: $('#billing_form_'+planId).serialize(),
+      dateType: 'json',
+      success: function(data) {
+        if (data.status == "error") {
+          var msgs = data.detail.split("~");
+          var error = '<ul class="alert alert-error" style="margin-left: -3px;">';
+          for (var i in msgs) {
+            error += '<li style="margin-left: 13px;">' + msgs[i] + '</li>';
+          }            
+          error += '</ul>';
+          bootbox.alert(data.message + "<br /><br />" + error);
+        }
+        else {
+          window.location.reload();
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        bootbox.alert("Error updating plan: " + xhr.responseText);
+      }
+    });
+  }
+</script>
+#{/set}

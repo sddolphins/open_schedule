@@ -1,0 +1,47 @@
+.members_page {
+    margin: 0 auto;
+
+    h4 {
+        margin-bottom: 0;
+        background: url(../images/hr.png) repeat-x scroll left bottom;
+        padding-bottom: 12px;
+    }
+    
+    .action_area {
+        background-color: #eaf5fb;
+        padding: 20px 33px 20px 33px;
+        color: #555555;
+        
+        label {
+            color: #333333;
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: -5px;
+        }
+        
+        select {
+            color: #333333;
+            font-size: 13px;
+            margin-top: 2px;
+            width: 80px;
+        }
+        
+        td {
+            padding: 0 30px 0 0;
+            vertical-align: middle;
+        }
+        
+        td.text_example {
+            font-style: oblique;
+            font-size: 12px;
+            color: #888888;
+            padding-bottom: 10px;
+        }
+        
+        #add_member {
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+    }
+}

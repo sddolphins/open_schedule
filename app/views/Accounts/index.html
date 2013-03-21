@@ -1,0 +1,166 @@
+#{extends 'main.html' /}
+#{set title:'Accounts' /}
+#{set 'moreStyles'}
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/misc.css.scss'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/account.css.scss'}">
+#{/set}
+
+<div class="user_management_header">
+  <div class="name">
+    ${user.name}
+  </div>
+  <div class="sections">
+    <div class="section">
+      <a href="@{Users.show()}">profile</a>
+    </div>
+    <div class="section decorate">
+      <a href="#">accounts</a>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-info">
+  <div class="row-fluid">
+    <div class="span9">
+      <p>Accounts allow you to organize schedules.  Every schedule belong to an account.  
+      You can create as many accounts as you'd like - but each must be paid for 
+      and/or managed separately.  An account has one owner and can have additional 
+      people as members.</p>
+    </div>
+    <div class="span3">
+      <a id="create_account" class="btn btn-primary" href="#">Create Account&nbsp; <i class="icon-plus icon-white"></i> </a>
+    </div>
+  </div>
+</div>
+
+<div class="accounts_page">
+  
+  <h4 class="muted">Accounts I Own</h4>
+
+  #{list items:accounts, as:'account'}
+  <div class="header">
+    <div class="pull-left title">${account.name}</div>
+    <div class="pull-right">
+      <a class="btn btn-primary btn-small" href="@{Plans.index(account.id)}">Manage Account</a>
+      #{if account.schedules.size() < account.plan.schedules }
+        <a id="create_schedule" class="btn btn-primary btn-small" href="#">Create Schedule&nbsp; <i class="icon-plus icon-white"></i> </a>
+        <input type="hidden" id="account_id" value="${account.id}" />
+      #{/if}
+      &nbsp;&nbsp;
+    </div>
+  </div>
+
+  <div class="subheader">  
+    <div class="plan_description">
+      <div class="name">${account.plan.description}</div>
+      <div class="descriptor">account plan</div>
+    </div>
+    <div class="statistics">
+      <div class="schedules">
+        <div class="count">${account.schedules.size()}</div>
+        <div class="tag">private schedules</div>
+      </div>
+      <div class="members">
+        <div class="count">${account.members.size()}</div>
+        <div class="tag">members</div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="rows">
+    #{list items:account.schedules, as:'schedule'}
+    <li>
+      <div class="title">
+        <a href="#">${schedule.name}</a>
+        <div class="action">
+          <a href="@{Settings.index(account.id, schedule.id)}">Settings</a>&nbsp;&nbsp;
+          <a href="@{Members.index(account.id, schedule.id)}">Members</a>&nbsp;&nbsp;
+          <a href="#" onclick="deleteSchedule(${schedule.id}, '${schedule.name}')">Delete</a>
+        </div>
+      </div>
+    </li>
+    #{/list}
+  </ul>
+  <br />
+  #{/list}
+
+</div>
+
+#{set 'moreScripts'}
+<script type="text/javascript">
+  $(function() {
+    $('#create_account').on('click', function(e) {
+      bootbox.prompt("Account Name", "Cancel", "Create Account", function(result) {                
+        if (result != null) {                                             
+          var saveAction = #{jsAction @Accounts.create(':name') /};
+          $.ajax({
+            type: 'POST',
+            url: saveAction({name: result}),
+            success: function(data) {
+              if (data.status == "error") {
+                bootbox.alert("Error creating new account");
+              }
+              else {
+                window.location.reload();
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              bootbox.alert("Error creating new account: " + xhr.responseText);
+            }
+          });
+        }
+      });
+    });
+    
+    $('#create_schedule').on('click', function(e) {
+      var accountId = $('#account_id').val();
+      //console.log(accountId);
+      bootbox.prompt("Schedule Name", "Cancel", "Create Schedule", function(result) {                
+        if (result != null) {                                             
+          var saveAction = #{jsAction @Schedules.create(':account_id', ':name') /};
+          $.ajax({
+            type: 'POST',
+            url: saveAction({account_id: accountId, name: result}),
+            success: function(data) {
+              if (data.status == "error") {
+                bootbox.alert("Error creating new schedule");
+              }
+              else {
+                window.location.reload();
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              bootbox.alert("Error creating new schedule: " + xhr.responseText);
+            }
+          });
+        }
+      });
+    });
+    
+    return false;
+  });
+
+  function deleteSchedule(scheduleId, scheduleName) {
+    bootbox.confirm("You are about to permanently delete the schedule: " + scheduleName + ".  Are you sure you want to do this?", function(result) {
+      if (result) {                                             
+        var deleteAction = #{jsAction @Schedules.delete(':schedule_id') /};
+        $.ajax({
+          type: 'DELETE',
+          url: deleteAction({schedule_id: scheduleId}),
+          success: function(data) {
+            if (data.status == "error") {
+              bootbox.alert("Error deleting schedule");
+            }
+            else {
+              window.location.reload();
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            bootbox.alert("Error deleting schedule: " + xhr.responseText);
+          }
+        });
+      }
+    });
+  }
+</script>
+#{/set}

@@ -1,0 +1,52 @@
+#{extends 'main.html' /}
+#{set title:'Sign Up' /}
+
+<h1 id="title">Sign Up</h1>
+
+<div class="row">
+  <div class="span6 offset4">
+    <form id="signup" action="@{Application.register}" method="POST"
+                      accept-charset="utf-8">
+      <p class="light">
+        Open Schedule will send you an email for confirmation.
+      </p>
+      
+      <p>
+        <label>Display Name</label>
+        <div class="input-prepend">
+          <span class="add-on"><i class="icon-user"></i></span>
+          <input id="name" type="text" name="name" value="${flash.name}" />
+          <span class="alert-error">#{error 'name' /}
+        </div>
+      </p>
+      <p>
+        <label>Email</label>
+        <div class="input-prepend">
+          <span class="add-on"><i class="icon-envelope"></i></span>
+          <input id="email" type="text" name="email" value="${flash.email}" />
+          <span class="alert-error">#{error 'email' /}</span>
+        </div>
+      </p>
+      <p>
+        <label>Password (must be at least 6 characters)</label>
+        <div class="input-prepend">
+          <span class="add-on"><i class="icon-key"></i></span>
+          <input id="password" type="password" name="password" value="${flash.password}" />
+          <span class="alert-error">#{error 'password' /}</span>
+        </div>
+      </p>
+      <p>
+        <label>Confirmation</label>
+        <div class="input-prepend">
+          <span class="add-on"><i class="icon-key"></i></span>
+          <input id="password2" type="password" name="password2" value="${flash.password2}" />
+          <span class="alert-error">#{error 'password2' /}</span>
+        </div>
+      </p>
+      <p>
+        <input id="signupBtn" class="btn btn-large btn-primary" type="submit"
+               value="Create My Account" />
+      </p>
+    </form>
+  </div>
+</div>

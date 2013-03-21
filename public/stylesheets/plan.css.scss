@@ -1,0 +1,169 @@
+.account_plans_page {
+    margin: 0 auto;
+
+    ul.account_widget {
+        float: right;
+        font-size: 11px;
+        line-height: 1em;
+        overflow: hidden;
+        
+        li {
+            float: left;
+            list-style: none outside none;
+            padding: 15px 10px;
+            margin-right: 5px;
+        }
+    }
+    
+    .separator {
+        padding-top: 30px;
+        
+        h4 {
+            margin-bottom: 0;
+            background: url(../images/hr.png) repeat-x scroll left bottom;
+            padding-bottom: 12px;        
+        }        
+    }
+    
+    .content {
+        width: 700px;
+        margin-bottom: 20px;
+
+        .header {
+            background-color: #33393d;
+            border: 1px solid #33393d;
+            color: #ffffff;
+            text-align: center;
+            overflow: hidden;
+            height: 40px;
+            line-height: 40px;
+
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+
+            -moz-border-top-left-radius: 10px;
+            -moz-border-top-right-radius: 10px;
+            -moz-border-bottom-right-radius: 0;
+            -moz-border-bottom-left-radius: 0;
+
+            -webkit-border-top-left-radius: 10px;
+            -webkit-border-top-right-radius: 10px;
+            -webkit-border-bottom-right-radius: 0;
+            -webkit-border-bottom-left-radius: 0;
+
+            .plan {
+                text-align: left;
+                width: 180px;
+            }
+
+            div {
+                float: left;
+                width: 150px;
+            }
+        }
+
+        .plan_header {
+            color: #666666;
+            background-color: #f2f2f2;
+            border-top: 1px solid #ffffff;
+            border-bottom: 1px solid #e3e3e3;
+            border-left: 1px solid #dddddd;
+            border-right: 1px solid #dddddd;
+            font-size: 11px;
+            height: 50px;
+            line-height: 50px;
+            verflow: hidden;
+            
+            div.title {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-size: 12px;
+                text-indent: 18px;
+                width: 180px;
+                text-transform: uppercase;
+                font-weight: bold;
+            }
+
+            h5 {
+                .name {
+                    line-height: 25px;
+                }
+                .price {
+                    height: 5px;
+                    line-height: 0px;
+                    text-transform: none;
+                    font-size: 11px;
+                    font-weight: normal;
+                    padding-left: 0px;
+                }
+            }
+            .schedules {
+                font-weight: bold;
+                text-align: center;
+            }
+
+            .members {
+                font-weight: bold;
+                text-align: center;
+            }
+
+            .plan_button {
+                float: right;
+                padding-right: 20px;
+                padding-top: 5px;
+                
+                label {
+                    margin-top: 10px;
+                    margin-left: 30px;
+                }
+            }
+        }
+
+        .plan_header > div {
+            width: 150px;
+            float: left;
+        }
+
+        .plan_header:hover {            
+            background-color: #ffffff;
+        }
+
+        .billing_options {
+            background-color: #eaf5fb;
+
+            form {
+                font-size: 12px;
+                
+                .billing_type {
+                    margin-right: 4px;
+                    margin-top: -4px;
+                    vertical-align: middle;
+                }
+
+                label {
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin: 0 auto;
+                }
+
+                input#accountNumber {
+                    margin-top: -10px;
+                    margin-bottom: 20px;
+                }
+
+                input#zip {
+                    width: 80px;
+                }
+
+                select {
+                    margin-top: 0px;
+                    margin-bottom: 20px;
+                    width: 65px;
+                }
+            }
+        }
+    }
+}

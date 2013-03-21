@@ -1,0 +1,124 @@
+.accounts_page {
+    width: 700px;
+
+    .header {
+        background-color: #33393d;
+        border: 1px solid #33393d;
+        color: #ffffff;
+        text-align: center;
+        overflow: hidden;
+        height: 40px;
+        line-height: 40px;
+        
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+
+        -moz-border-top-left-radius: 10px;
+        -moz-border-top-right-radius: 10px;
+        -moz-border-bottom-right-radius: 0;
+        -moz-border-bottom-left-radius: 0;
+
+        _webkit-border-top-left-radius: 10px;
+        _webkit-border-top-right-radius: 10px;
+        _webkit-border-bottom-right-radius: 0;
+        _webkit-border-bottom-left-radius: 0;
+        
+        .title {
+            text-indent: 20px;
+        }
+    }
+
+    .subheader {
+        background: url(../images/accounts_details_bg.png) repeat;
+        height: 65px;
+        .plan_description {
+            float: left;
+            padding-top: 15px;
+            padding-left: 20px;
+            width: 33%;
+            .name {
+                font-weight: bold;
+            }
+            .descriptor {
+                color: #777777;
+                font-size: 12px;
+            }
+        }
+        .statistics {
+            float: right;
+            padding-top: 15px;
+            text-align: center;
+            width: 33%;
+            .schedules {
+                float: left;
+                padding-right: 30px;
+                padding-left: 20px;
+            }
+            .members {
+                float: left;
+            }
+            .count {
+                font-weight: bold;
+            }
+            .tag {
+                color: #777777;
+                font-size: 12px;
+            }
+        }
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    ul.rows > li {
+        background-color: #f2f2f2;
+        border-top: 1px solid #ffffff;
+        border-bottom: 1px solid #e3e3e3;
+        border-left: 1px solid #dddddd;
+        border-right: 1px solid #dddddd;
+        color: #666666;
+        font-size: 14px;
+        height: 50px;
+        line-height: 50px;
+        overflow: hidden;
+    }
+    ul.rows > li:last-child {
+        border-bottom: 1px solid #dddddd;
+        
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        
+        -moz-border-top-left-radius: 0;
+        -moz-border-top-right-radius: 0;
+        -moz-border-bottom-right-radius: 10px;
+        -moz-border-bottom-left-radius: 10px;
+
+        -webkit-border-top-left-radius: 0;
+        -webkit-border-top-right-radius: 0;
+        -webkit-border-bottom-right-radius: 10px;
+        -webkit-border-bottom-left-radius: 10px;
+    }
+    ul.rows > li div.title {
+        color: #327a9f;
+        overflow: hidden;
+        text-indent: 18px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+    }
+    ul.rows > li div.action {
+        color: #327a9f;
+        overflow: hidden;
+        float: right;
+        text-indent: 18px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 33%;
+    }
+}

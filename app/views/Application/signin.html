@@ -1,0 +1,42 @@
+#{extends 'main.html' /}
+#{set title:'Sign In' /}
+
+<h1 id="title">Sign In</h1>
+
+<div class="row">
+  <div class="span6 offset4">
+    <form id="signin" action="@{Application.authenticate}" method="POST"
+                      accept-charset="utf-8">
+      <p class="light">
+        Enter email and password to access Open Schedule.
+      </p>
+
+      <p>
+        <label>Email</label>
+        <div class="input-prepend">
+          <span class="add-on"><i class="icon-envelope"></i></span>
+          <input id="email" type="text" name="email" placeholder="Email" value="${flash.email}" />
+        </div>
+      </p>
+      <p>
+        <label>Password</label>
+        <div class="input-prepend">
+          <span class="add-on"><i class="icon-key"></i></span>
+          <input id="password" type="password" name="password" placeholder="Password" value="" />
+        </div>
+      </p>
+      <p>
+        <input id="signinBtn" class="btn btn-large btn-primary" type="submit"
+               value="Sign In" />
+      </p>
+    </form>
+
+    #{if flash.notconfirmed}
+      <p>
+        <a class="action" href="@{Application.resendConfirmation(flash.notconfirmed)}">Resend a confirmation email</a>
+      </p>
+    #{/if}
+    
+    <p>New user? <a href="@{Application.signup}">Sign up now!</a></p>
+  </div>
+</div>

@@ -1,0 +1,5 @@
+Hello ${user.name},
+
+You have been granted access to the following schedule: ${scheduleName}
+
+Thanks!

@@ -1,0 +1,143 @@
+#{extends 'main.html' /}
+#{set title:'Profile' /}
+#{set 'moreStyles'}
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/misc.css.scss'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/profile.css.scss'}">
+#{/set}
+
+<div class="user_management_header">
+  <div class="name">
+    ${user.name}
+  </div>
+  <div class="sections">
+    <div class="section decorate">
+      <a href="#">profile</a>
+    </div>
+    <div class="section">
+      <a href="@{Accounts.index}">accounts</a>
+    </div>
+  </div>
+</div>
+
+<br />
+<div class="profile_page">
+  <div class="header">
+    <div class="pull-left title">My Profile</div>
+    <div id="general_flash" class="pull-left"></div>
+    <div id="action" class="pull-right">
+      <button class="btn edit"><i class="icon-pencil"></i></button>
+      <button id="cancel" class="btn hide">Cancel</button>
+      <button id="save" class="btn btn-primary hide">Save</button>
+    </div>
+  </div>
+
+  <table id="form" class="table table-bordered">
+    <tbody> 
+        <tr>         
+          <td width="30%">Display Name</td>
+          <td width="70%"><a href="#" id="name" data-type="text">${user.name}</a></td>
+        </tr>
+        <tr>         
+          <td width="30%">Email</td>
+          <td width="70%"><a href="#" id="mail" data-type="text">${user.email}</a></td>
+        </tr>
+        <tr>         
+          <td width="30%">Password</td>
+          <td width="70%"><a href="#" id="pwd" data-type="password"></a></td>
+        </tr>
+    <tbody> 
+  </table> 
+</div>
+
+#{set 'moreScripts'}
+<script src="@{'/public/javascripts/flash-message.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+
+<script type="text/javascript">
+  $(function() {
+    $('#form a').editable({
+      mode: 'inline',
+      onblur: 'ignore',
+      toggle: 'manual',
+      savenochange: true,
+      showbuttons: false,
+      success: function(params) {
+        return false;
+      }
+    }).editable('hide');
+
+    $('#action').on('click', '.edit', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      // Toggle form.
+      $('#action').find('.edit').hide();
+      $('#action').find('.hide').show();
+      $('#form a').editable('show');
+
+      // Set default tab index and focus.
+      var tabindex = 1;
+      $('#form').find('input, select').each(function() {
+        if (this.type != "hidden") {
+          var $input = $(this);
+          $input.attr("tabindex", tabindex);
+
+          // Select the first one.
+          if (tabindex == 1) {
+             $input.select();
+          }
+          tabindex++;
+        }
+      });
+    });
+
+    $('#name').on('hidden', function(e, reason) {
+      console.log(reason);
+      $('#action').find('.hide').hide();
+      $('#action').find('.edit').show();
+    });
+
+    $('#action').on('click', '#cancel', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      // Toggle form.
+      $('#action').find('.hide').hide();
+      $('#action').find('.edit').show();
+      $('#form a').editable('hide');
+    });
+
+    $('#action').on('click', '#save', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      //var obj = $('#name, #pwd').editable('getValue');
+      var data = [];
+      $('#form .editable').each(function() {
+        // Copy new values.
+        var name = $(this).attr('id'),
+        value = $(this).data().editable.input.$input.val();
+        data[name] = value;
+
+        // Update form.
+        $('#'+name).editable('setValue', value);
+      });
+
+      // Save values.
+      console.log(data);
+      saveProfile(data);
+
+      // Toggle form.
+      $('#action').find('.hide').hide();
+      $('#action').find('.edit').show();
+      $('#form a').editable('hide');
+    });
+  });
+
+  function saveProfile(obj) {
+    $('#general_flash').flash_message({
+      text: 'profile saved...',
+      how: 'append'
+    });
+  }
+</script>
+#{/set}
