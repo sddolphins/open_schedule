@@ -141,7 +141,7 @@ create table organization
     lu timestamp default now() on update now(),
 
     index organization_owner_idx (owner_id),
-    foreign key (owner_id) references user (id),
+    foreign key (owner_id) references user (id)
 ) engine = innodb;
 
 create table facility

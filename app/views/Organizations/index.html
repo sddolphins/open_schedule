@@ -1,0 +1,161 @@
+#{extends 'main.html' /}
+#{set title:'Organizations' /}
+#{set 'moreStyles'}
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/misc.css.scss'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/account.css.scss'}">
+#{/set}
+
+<div class="sections_header">
+  <div class="name">
+    ${user.name}
+  </div>
+  <div class="sections">
+    <div class="section decorate">
+      <a href="#">Organizations</a>
+    </div>
+    <div class="section">
+      <a href="@{Locations.index}">Locations</a>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-info">
+  <div class="row-fluid">
+    <div class="span9">
+      <p>Organizations and Facilities allow you to manage schedules within single facility or across multiple facilities.</p>
+    </div>
+    <div class="span3 pull-right">
+      <a id="create_organization" class="btn btn-primary" href="#">Create Organization&nbsp; <i class="icon-plus icon-white"></i> </a>
+    </div>
+  </div>
+</div>
+
+<div class="accounts_page">
+
+  #{list items:orgs, as:'org'}
+  <div class="header">
+    <div class="pull-left title">${org.name}</div>
+    <div class="pull-right">
+      <a class="btn btn-primary btn-small" href="#" onclick="createFacility(${org.id})">Create Facility&nbsp; <i class="icon-plus icon-white"></i> </a>
+      <a class="btn btn-primary btn-small" href="#" onclick="deleteOrganization(${org.id}, '${org.name}')">Remove Organization </a>
+      <input type="hidden" id="organization_id" value="${org.id}" />
+      &nbsp;&nbsp;
+    </div>
+  </div>
+
+  <ul class="rows">
+    #{list items:org.facilities, as:'facility'}
+    <li>
+      <div class="title">
+        <a href="#">${facility.name}</a>
+        <div class="action">
+          <a href="#" onclick="deleteFacility(${facility.id}, '${facility.name}')">Remove</a>
+        </div>
+      </div>
+    </li>
+    #{/list}
+  </ul>
+  <br />
+  #{/list}
+
+</div>
+
+#{set 'moreScripts'}
+<script type="text/javascript">
+  $(function() {
+    $('#create_organization').on('click', function(e) {
+      bootbox.prompt("Organization Name", "Cancel", "Create Organization", function(result) {                
+        if (result != null) {                                             
+          var saveAction = #{jsAction @Organizations.create(':name') /};
+          $.ajax({
+            type: 'POST',
+            url: saveAction({name: result}),
+            success: function(data) {
+              if (data.status == "error") {
+                bootbox.alert("Error creating new organization");
+              }
+              else {
+                window.location.reload();
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              bootbox.alert("Error creating new organization: " + xhr.responseText);
+            }
+          });
+        }
+      });
+    });
+    
+    return false;
+  });
+
+  function createFacility(orgId) {
+    bootbox.prompt("Facility Name", "Cancel", "Create Facility", function(result) {                
+      if (result != null) {                                             
+        var saveAction = #{jsAction @Facilities.create(':organization_id', ':name') /};
+        $.ajax({
+          type: 'POST',
+          url: saveAction({organization_id: orgId, name: result}),
+          success: function(data) {
+            if (data.status == "error") {
+              bootbox.alert("Error creating new facility");
+            }
+            else {
+              window.location.reload();
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            bootbox.alert("Error creating new facility: " + xhr.responseText);
+          }
+        });
+      }
+    });
+  }
+
+  function deleteOrganization(orgId, orgName) {
+    bootbox.confirm("You are about to permanently remove organization " + orgName + " and all its facilities.  Are you sure you want to do this?", function(result) {
+      if (result) {                                             
+        var deleteAction = #{jsAction @Organizations.delete(':organization_id') /};
+        $.ajax({
+          type: 'DELETE',
+          url: deleteAction({organization_id: orgId}),
+          success: function(data) {
+            if (data.status == "error") {
+              bootbox.alert("Error removing organization");
+            }
+            else {
+              window.location.reload();
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            bootbox.alert("Error removing organization: " + xhr.responseText);
+          }
+        });
+      }
+    });
+  }
+
+  function deleteFacility(facilityId, facilityName) {
+    bootbox.confirm("You are about to permanently remove facility " + facilityName + " and all its locations.  Are you sure you want to do this?", function(result) {
+      if (result) {                                             
+        var deleteAction = #{jsAction @Facilities.delete(':facility_id') /};
+        $.ajax({
+          type: 'DELETE',
+          url: deleteAction({facility_id: facilityId}),
+          success: function(data) {
+            if (data.status == "error") {
+              bootbox.alert("Error removing facility");
+            }
+            else {
+              window.location.reload();
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            bootbox.alert("Error removing facility: " + xhr.responseText);
+          }
+        });
+      }
+    });
+  }
+</script>
+#{/set}

@@ -5,7 +5,7 @@
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/plan.css.scss'}">
 #{/set}
 
-<div class="user_management_header">
+<div class="sections_header">
   <div class="name">
     ${account.name}
   </div>
@@ -104,7 +104,7 @@
                   </p>
                   <p>
                     <label>Country</label>
-                    <input type="text" id="country" name="country" />
+                    <select id="country" name="country" class="input-medium bfh-countries" data-country="US"></select>
                   </p>
                 </div>
 
@@ -122,7 +122,7 @@
                   </div>
                   <div>
                     <label>State/Province</label>
-                    <input type="text" id="state" name="state" />
+                    <select id="state" name="state" class="input-medium bfh-states" data-country="country"></select>
                   </div>
                 </div>
 
@@ -192,6 +192,11 @@
 </div>
 
 #{set 'moreScripts'}
+<script src="@{'/public/javascripts/bootstrap-formhelpers-countries.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/bootstrap-formhelpers-countries.en_US.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/bootstrap-formhelpers-states.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/bootstrap-formhelpers-states.en_US.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+
 <script type="text/javascript">
   $(function() {
     $('.accordion-body').collapse('hide');

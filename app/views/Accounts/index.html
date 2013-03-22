@@ -5,16 +5,16 @@
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/account.css.scss'}">
 #{/set}
 
-<div class="user_management_header">
+<div class="sections_header">
   <div class="name">
     ${user.name}
   </div>
   <div class="sections">
     <div class="section">
-      <a href="@{Users.show()}">profile</a>
+      <a href="@{Users.show()}">Profile</a>
     </div>
     <div class="section decorate">
-      <a href="#">accounts</a>
+      <a href="#">Accounts</a>
     </div>
   </div>
 </div>
@@ -75,7 +75,7 @@
         <div class="action">
           <a href="@{Settings.index(account.id, schedule.id)}">Settings</a>&nbsp;&nbsp;
           <a href="@{Members.index(account.id, schedule.id)}">Members</a>&nbsp;&nbsp;
-          <a href="#" onclick="deleteSchedule(${schedule.id}, '${schedule.name}')">Delete</a>
+          <a href="#" onclick="deleteSchedule(${schedule.id}, '${schedule.name}')">Remove</a>
         </div>
       </div>
     </li>
@@ -141,7 +141,7 @@
   });
 
   function deleteSchedule(scheduleId, scheduleName) {
-    bootbox.confirm("You are about to permanently delete the schedule: " + scheduleName + ".  Are you sure you want to do this?", function(result) {
+    bootbox.confirm("You are about to permanently remove the schedule: " + scheduleName + ".  Are you sure you want to do this?", function(result) {
       if (result) {                                             
         var deleteAction = #{jsAction @Schedules.delete(':schedule_id') /};
         $.ajax({
@@ -149,14 +149,14 @@
           url: deleteAction({schedule_id: scheduleId}),
           success: function(data) {
             if (data.status == "error") {
-              bootbox.alert("Error deleting schedule");
+              bootbox.alert("Error removing schedule");
             }
             else {
               window.location.reload();
             }
           },
           error: function(xhr, ajaxOptions, thrownError) {
-            bootbox.alert("Error deleting schedule: " + xhr.responseText);
+            bootbox.alert("Error removing schedule: " + xhr.responseText);
           }
         });
       }

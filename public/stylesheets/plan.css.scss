@@ -143,6 +143,12 @@
                     vertical-align: middle;
                 }
 
+                #country, #state {
+                    margin-top: 0px;
+                    margin-bottom: 20px;
+                    width: 220px;
+                }
+
                 label {
                     font-size: 12px;
                     font-weight: bold;

@@ -40,6 +40,20 @@ DELETE  /members/{id}                           Members.delete
 # Settings
 GET     /settings                               Settings.index
 
+# Organizations
+GET     /Organizations                          Organizations.index
+POST    /Organizations                          Organizations.create
+DELETE  /Organizations/{id}                     Organizations.delete
+
+# Facilities
+POST    /Facilities                             Facilities.create
+DELETE  /Facilities/{id}                        Facilities.delete
+
+# Locations
+GET     /Locations                              Locations.index
+POST    /Locations                              Locations.create
+DELETE  /Locations/{id}                         Locations.delete
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 

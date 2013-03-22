@@ -1,0 +1,140 @@
+#{extends 'main.html' /}
+#{set title:'Locations' /}
+#{set 'moreStyles'}
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/misc.css.scss'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/account.css.scss'}">
+#{/set}
+
+<div class="sections_header">
+  <div class="name">
+    ${user.name}
+  </div>
+  <div class="sections">
+    <div class="section">
+      <a href="@{Organizations.index}">Organizations</a>
+    </div>
+    <div class="section decorate">
+      <a href="#">Locations</a>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-info">
+  <div class="row-fluid">
+    <div class="span9">
+      <p>Locations allow you to create schedules for particular units, departments or the entire facility.</p>
+    </div>
+  </div>
+</div>
+
+<div class="accounts_page">
+
+  #{list items:orgs, as:'org'}
+  <h4 class="muted">${org.name}</h4>
+
+  #{if org.facilities.size() > 0 }
+    #{list items:org.facilities, as:'fac'}
+    <div class="header">
+      <div class="pull-left title">${fac.name}</div>
+      <div class="pull-right">
+        <a class="btn btn-primary btn-small" href="#" onclick="createLocation(${fac.id})">Create Location&nbsp; <i class="icon-plus icon-white"></i> </a>
+        <a class="btn btn-primary btn-small" href="#" onclick="deleteFacility(${fac.id}, '${fac.name}')">Remove Facility </a>
+        <input type="hidden" id="facility_id" value="${fac.id}" />
+        &nbsp;&nbsp;
+      </div>
+    </div>
+
+    <ul class="rows">
+      #{list items:fac.locations, as:'loc'}
+      <li>
+        <div class="title">
+          <a href="#">${loc.name}</a>
+          <div class="action">
+            <a href="#" onclick="deleteLocation(${loc.id}, '${loc.name}')">Remove</a>
+          </div>
+        </div>
+      </li>
+      #{/list}
+    </ul>
+    <br />
+    #{/list}
+  #{/if}
+  #{else}
+    <div class="pull-left title">No facilities found ...</div>
+  #{/else}
+  #{/list}
+
+</div>
+
+#{set 'moreScripts'}
+<script type="text/javascript">
+  function createLocation(facId) {
+    bootbox.prompt("Location Name", "Cancel", "Create Location", function(result) {                
+      if (result != null) {                                             
+        var saveAction = #{jsAction @Locations.create(':facility_id', ':name') /};
+        $.ajax({
+          type: 'POST',
+          url: saveAction({facility_id: facId, name: result}),
+          success: function(data) {
+            if (data.status == "error") {
+              bootbox.alert("Error creating new location");
+            }
+            else {
+              window.location.reload();
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            bootbox.alert("Error creating new location: " + xhr.responseText);
+          }
+        });
+      }
+    });
+  }
+
+  function deleteLocation(locId, locName) {
+    bootbox.confirm("You are about to permanently remove location " + locName + ".  Are you sure you want to do this?", function(result) {
+      if (result) {                                             
+        var deleteAction = #{jsAction @Locations.delete(':location_id') /};
+        $.ajax({
+          type: 'DELETE',
+          url: deleteAction({location_id: locId}),
+          success: function(data) {
+            if (data.status == "error") {
+              bootbox.alert("Error removing location");
+            }
+            else {
+              window.location.reload();
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            bootbox.alert("Error removing location: " + xhr.responseText);
+          }
+        });
+      }
+    });
+  }
+
+  function deleteFacility(facilityId, facilityName) {
+    bootbox.confirm("You are about to permanently remove facility " + facilityName + " and all its locations.  Are you sure you want to do this?", function(result) {
+      if (result) {                                             
+        var deleteAction = #{jsAction @Facilities.delete(':facility_id') /};
+        $.ajax({
+          type: 'DELETE',
+          url: deleteAction({facility_id: facilityId}),
+          success: function(data) {
+            if (data.status == "error") {
+              bootbox.alert("Error removing facility");
+            }
+            else {
+              window.location.reload();
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            bootbox.alert("Error removing facility: " + xhr.responseText);
+          }
+        });
+      }
+    });
+  }
+</script>
+#{/set}
