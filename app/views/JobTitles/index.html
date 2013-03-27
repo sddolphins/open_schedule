@@ -1,0 +1,115 @@
+#{extends 'main.html' /}
+#{set title:'Job Titles' /}
+#{set 'moreStyles'}
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/misc.css.scss'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/account.css.scss'}">
+#{/set}
+
+<div class="sections_header">
+  <div class="name">
+    <a href="@{Accounts.index}">${account.name}</a>
+  </div>
+  <div class="sections">
+    <div class="section">
+      <a href="@{Plans.index(account.id)}">Plans & Billings</a>
+    </div>
+    <div class="section">
+      <a href="@{Organizations.index(account.id)}">Organizations</a>
+    </div>
+    <div class="section">
+      <a href="@{Locations.index(account.id)}">Locations</a>
+    </div>
+    <div class="section decorate">
+      <a href="#">Job Titles</a>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-info">
+  <p>Job Titles allow you to manage open shifts ...</p>
+</div>
+
+<div class="accounts_page">
+
+  <div class="header">
+    <div class="pull-left title">Job Titles</div>
+    <div class="pull-right">
+      <input type="hidden" id="account_id" value="${account.id}" />
+      <a id="create_job_title" class="btn btn-primary btn-small" href="#">Create Job Title&nbsp; <i class="icon-plus icon-white"></i> </a>
+      &nbsp;&nbsp;
+    </div>
+  </div>
+  
+  <ul class="rows">
+    #{list items:jobTitles, as:'jt'}
+    <li>
+      <div class="title">
+        <div class="row-fluid">
+          <div class="span9">
+            <a href="#">${jt.name}</a>
+          </div>
+          <div class="span3">
+            <a href="#" onclick="deleteJobTitle(${jt.id}, '${jt.name}')">&nbsp;&nbsp;&nbsp;Remove</a>
+          </div>
+        </div>
+      </div>
+    </li>
+    #{/list}
+  </ul>
+
+</div>
+
+#{set 'moreScripts'}
+<script type="text/javascript">
+  $(function() {
+    $('#create_job_title').on('click', function(e) {
+      var accountId = $('#account_id').val();
+      bootbox.prompt("Job Title Description", "Cancel", "Create Job Title", function(result) {                
+        if (result != null) {                                             
+          var saveAction = #{jsAction @JobTitles.create(':account_id', ':name') /};
+          $.ajax({
+            type: 'POST',
+            url: saveAction({account_id: accountId, name: result}),
+            success: function(data) {
+              if (data.status == "error") {
+                bootbox.alert("Error creating new job title");
+              }
+              else {
+                window.location.reload();
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              bootbox.alert("Error creating new job title: " + xhr.responseText);
+            }
+          });
+        }
+      });
+    });
+    
+    return false;
+  });
+
+  function deleteJobTitle(jtId, jtName) {
+    bootbox.confirm("You are about to permanently remove job title " + jtName + ".  Are you sure you want to do this?", function(result) {
+      if (result) {                                             
+        var deleteAction = #{jsAction @JobTitles.delete(':job_title_id') /};
+        $.ajax({
+          type: 'DELETE',
+          url: deleteAction({job_title_id: jtId}),
+          success: function(data) {
+            if (data.status == "error") {
+              bootbox.alert("Error removing job title");
+            }
+            else {
+              window.location.reload();
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            bootbox.alert("Error removing job title: " + xhr.responseText);
+          }
+        });
+      }
+    });
+  }
+</script>
+#{/set}

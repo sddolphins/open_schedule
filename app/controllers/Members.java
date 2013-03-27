@@ -1,10 +1,14 @@
 package controllers;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import play.Logger;
 import play.data.validation.*;
+import play.libs.Codec;
+import play.Logger;
 
 import helpers.StatusMessage;
 import models.Account;
@@ -91,6 +95,92 @@ public class Members extends BaseController {
             renderJSON(new StatusMessage(StatusMessage.ERROR,
                                          "Error adding new member:  " + user.email + " already existed!", ""));
         }
+
+        renderJSON(new StatusMessage(StatusMessage.SUCCESS, "", ""));
+    }
+
+    public static void update(Long id) {
+        System.out.println("Members.update() - id = " + id);
+
+        Map<String, String[]> values = params.all();
+        String name = values.get("name")[0];
+        String email = values.get("email")[0];
+        String phone = values.get("phone")[0];
+        String password = values.get("password")[0];
+        String password2 = values.get("password2")[0];
+        String address = values.get("address")[0];
+        String city = values.get("city")[0];
+        String state = values.get("state")[0];
+        String zip = values.get("zip")[0];
+        String country = values.get("country")[0];
+        String hireDate = values.get("hireDate")[0];
+        String status = values.get("employeeStatus")[0];
+        String jobTitle = values.get("jobTitle")[0];
+        String location = values.get("location")[0];
+        String basePay = values.get("basePay")[0];
+        
+        validation.required("Name", name);
+        validation.required("Email", email);
+        validation.email("Email", email);
+
+        boolean pwdChanged = false;
+        if (password != null && password.trim().length() > 0) {
+            pwdChanged = true;
+            validation.minSize("Password", password, 6);
+            validation.equals("Password", password, "confirmation password", password2);
+        }
+
+        if (validation.hasErrors()) {
+            StringBuffer sb = new StringBuffer();
+            ArrayList<play.data.validation.Error> errors = (ArrayList)validation.errors();
+            for (int i = 0; i < errors.size(); i++) {
+                if (i > 0)
+                    sb.append("~");
+                sb.append(errors.get(i).message());
+            }
+            renderJSON(new StatusMessage(StatusMessage.ERROR, sb.toString(), ""));
+        }
+
+        // Find member.
+        Member member = Member.findById(id);
+
+        // Update user info.
+        User user = member.user;
+        user.name = name;
+        user.email = email;
+        if (pwdChanged)
+            user.passwordHash = Codec.hexMD5(password);
+        user.save();
+
+        // Update member info.
+        member.address = address;
+        member.city = city;
+        member.state = state;
+        member.zip = zip;
+        member.country = country;
+        member.phone = phone;
+        if (hireDate != null && hireDate.trim().length() > 0) {
+            try {                
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                member.hireDate = sdf.parse(hireDate);
+            }
+            catch (ParseException e) {
+                System.out.println("Error parsing hire date: " + e.getMessage());
+            }
+        }
+        if (jobTitle != null && jobTitle.trim().length() > 0) {
+            member.jobTitleId = Integer.parseInt(jobTitle);
+        }
+        if (location != null && location.trim().length() > 0) {
+            member.locationId = Integer.parseInt(location);
+        }
+        if (status != null && status.trim().length() > 0) {
+            member.employeeStatusId = Integer.parseInt(status);
+        }
+        if (basePay != null && basePay.trim().length() > 0) {
+            member.basePay = Double.parseDouble(basePay);
+        }
+        member.save();
 
         renderJSON(new StatusMessage(StatusMessage.SUCCESS, "", ""));
     }

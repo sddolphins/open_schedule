@@ -32,8 +32,8 @@
             $('#error').show();
           }
           else {
-            // Close form.
-            $('#profile_form').modal('hide');
+            // Close popup.
+            $('#profile_dlg').modal('hide');
           }
         },
         error: function(xhr, ajaxOptions, thrownError) {
@@ -45,7 +45,7 @@
   });
 </script>
 
-<div class="modal hide fade" id="profile_form">
+<div class="modal hide fade" id="profile_dlg">
   <div class="modal-header">
     <a class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
     <h3>Update Your Profile</h3>

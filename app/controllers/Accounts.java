@@ -12,7 +12,7 @@ public class Accounts extends BaseController {
 
     public static void index() {
         User user = Application.connectedUser();
-        List<Account> accounts = Account.findByOwner(user.id.intValue());
+        List<Account> accounts = Account.findByOwnerId(user.id.intValue());
         render(user, accounts);
     }
 

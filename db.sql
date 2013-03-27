@@ -109,39 +109,19 @@ create table schedule
     lu timestamp default now() on update now(),
     
     index schedule_account_idx (account_id),
-    foreign key (account_id) references account (id),
-    index schedule_organization_idx (organization_id),
-    foreign key (organization_id) references organization (id)
-) engine = innodb;
-
-create table member
-(
-    id bigint unsigned not null auto_increment primary key,
-    user_id bigint unsigned not null,
-    account_id int unsigned not null,
-    schedule_id int unsigned not null,
-    dc timestamp default 0,
-    lu timestamp default now() on update now(),
-    
-    unique key member_unique_key (user_id, account_id, schedule_id),
-    index member_user_idx (user_id),
-    foreign key (user_id) references user (id),
-    index member_account_idx (account_id),
-    foreign key (account_id) references account (id),
-    index member_schedule_idx (schedule_id),
-    foreign key (schedule_id) references schedule (id)
+    foreign key (account_id) references account (id)
 ) engine = innodb;
 
 create table organization
 (
     id int unsigned not null auto_increment primary key,
     name varchar(80) not null,
-    owner_id bigint unsigned not null,
+    account_id int unsigned not null,
     dc timestamp default 0,
     lu timestamp default now() on update now(),
 
-    index organization_owner_idx (owner_id),
-    foreign key (owner_id) references user (id)
+    index organization_account_idx (account_id),
+    foreign key (account_id) references account (id)
 ) engine = innodb;
 
 create table facility
@@ -166,4 +146,53 @@ create table location
     
     index location_facility_idx (facility_id),
     foreign key (facility_id) references facility (id)
+) engine = innodb;
+
+create table job_title
+(
+    id int unsigned not null auto_increment primary key,
+    name varchar(80) not null,
+    account_id int unsigned not null,
+    dc timestamp default 0,
+    lu timestamp default now() on update now(),
+
+    index job_title_account_idx (account_id),
+    foreign key (account_id) references account (id)
+) engine = innodb;
+
+create table employee_status
+(
+    id tinyint unsigned not null auto_increment primary key,
+    status varchar(80) not null,
+    dc timestamp default 0,
+    lu timestamp default now() on update now()
+) engine = innodb;
+
+create table member
+(
+    id bigint unsigned not null auto_increment primary key,
+    user_id bigint unsigned not null,
+    account_id int unsigned not null,
+    schedule_id int unsigned not null,
+    job_title_id int unsigned null,
+    location_id int unsigned null,
+    employee_status_id tinyint unsigned null,
+    address varchar(80) null,
+    country varchar(40) null,
+    state varchar(40) null,
+    city varchar(40) null,
+    zip varchar(10) null,
+    phone varchar(15) null,
+    hire_date datetime null,
+    base_pay decimal(5,2) null,
+    dc timestamp default 0,
+    lu timestamp default now() on update now(),
+    
+    unique key member_unique_key (user_id, account_id, schedule_id),
+    index member_user_idx (user_id),
+    foreign key (user_id) references user (id),
+    index member_account_idx (account_id),
+    foreign key (account_id) references account (id),
+    index member_schedule_idx (schedule_id),
+    foreign key (schedule_id) references schedule (id)
 ) engine = innodb;

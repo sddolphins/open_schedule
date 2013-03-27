@@ -54,7 +54,7 @@ public class Account extends Model {
         return this.plan;
     }
 
-    public static List<Account> findByOwner(int ownerId) {
+    public static List<Account> findByOwnerId(int ownerId) {
         return Account.find("owner_id", ownerId).fetch();
     }
 }

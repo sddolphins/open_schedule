@@ -7,14 +7,20 @@
 
 <div class="sections_header">
   <div class="name">
-    ${user.name}
+    <a href="@{Accounts.index}">${account.name}</a>
   </div>
   <div class="sections">
     <div class="section">
-      <a href="@{Organizations.index}">Organizations</a>
+      <a href="@{Plans.index(account.id)}">Plans & Billings</a>
+    </div>
+    <div class="section">
+      <a href="@{Organizations.index(account.id)}">Organizations</a>
     </div>
     <div class="section decorate">
       <a href="#">Locations</a>
+    </div>
+    <div class="section">
+      <a href="@{JobTitles.index(account.id)}">Job Titles</a>
     </div>
   </div>
 </div>
@@ -22,7 +28,7 @@
 <div class="alert alert-info">
   <div class="row-fluid">
     <div class="span9">
-      <p>Locations allow you to create schedules for particular units, departments or the entire facility.</p>
+      <p>Locations allow you to create schedules for particular units, departments or the entire facility ...</p>
     </div>
   </div>
 </div>

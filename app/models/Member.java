@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -23,6 +24,28 @@ import play.db.jpa.Model;
                                                              "schedule_id"})})
 public class Member extends Model {
     
+    public String address;
+    public String city;
+    public String state;
+    public String zip;
+    public String country;
+    public String phone;
+
+    @Column(name = "hire_date")
+    public Date hireDate;
+
+    @Column(name = "base_pay")
+    public double basePay = 0.0;
+
+    @Column(name = "job_title_id")
+    public int jobTitleId;
+
+    @Column(name = "location_id")
+    public int locationId;
+
+    @Column(name = "employee_status_id")
+    public int employeeStatusId;
+
     public Timestamp dc;
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.LAZY)
@@ -43,6 +66,10 @@ public class Member extends Model {
         this.schedule = schedule;
         this.dc = null;
         save();
+    }
+
+    public static Member findByUserId(Long userId) {
+        return Member.find("user_id", userId).first();
     }
 
     public static int getCountByAccountId(Long accountId) {

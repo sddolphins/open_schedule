@@ -7,9 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Query;
 import javax.persistence.Table;
 
 import play.data.validation.Required;
+import play.db.jpa.JPA;
 import play.db.jpa.Model;
 
 @Entity
@@ -30,5 +32,15 @@ public class Location extends Model {
         this.facility = facility;
         this.dc = null;
         save();
+    }
+
+    public static List<Location> findByAccountId(int accountId) {
+        String str = "select l.* from location l " +
+                     "left join facility f on f.id = l.facility_id " +
+                     "left join organization o on o.id = f.organization_id " +
+                     "where o.account_id = " + accountId;
+        Query query = JPA.em().createNativeQuery(str, Location.class);
+        List<Location> locations = query.getResultList();
+        return locations;
     }
 }

@@ -7,14 +7,20 @@
 
 <div class="sections_header">
   <div class="name">
-    ${account.name}
+    <a href="@{Accounts.index}">${account.name}</a>
   </div>
   <div class="sections">
     <div class="section decorate">
       <a href="#">Plans & Billings</a>
     </div>
     <div class="section">
-      <a href="#">Settings</a>
+      <a href="@{Organizations.index(account.id)}">Organizations</a>
+    </div>
+    <div class="section">
+      <a href="@{Locations.index(account.id)}">Locations</a>
+    </div>
+    <div class="section">
+      <a href="@{JobTitles.index(account.id)}">Job Titles</a>
     </div>
   </div>
 </div>

@@ -3,22 +3,22 @@ package controllers;
 import java.util.Iterator;
 import java.util.List;
 
+import models.Account;
 import models.Facility;
 import models.Organization;
-import models.User;
 
 @Secure
 public class Organizations extends BaseController {
 
-    public static void index() {
-        User user = Application.connectedUser();
-        List<Organization> orgs = Organization.findByOwner(user.id.intValue());
-        render(user, orgs);
+    public static void index(int accountId) {
+        Account account = Account.findById(new Long(accountId));
+        List<Organization> orgs = Organization.findByAccountId(accountId);
+        render(account, orgs);
     }
 
-    public static void create(String name) {
-        User owner = Application.connectedUser();
-        Organization org = new Organization(name, owner);
+    public static void create(int accountId, String name) {
+        Account account = Account.findById(new Long(accountId));
+        new Organization(name, account);
     }
 
     public static void delete(int orgId) {

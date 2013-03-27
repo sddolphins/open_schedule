@@ -11,19 +11,17 @@ import models.Account;
 import models.Billing;
 import models.BillingType;
 import models.CreditCardType;
-import models.Plan;
 import models.Member;
-import models.User;
+import models.Plan;
 
 @Secure
 public class Plans extends BaseController {
 
     public static void index(int accountId) {
-        User user = Application.connectedUser();
         Account account = Account.findById(new Long(accountId));
         int memberCount = Member.getCountByAccountId(new Long(accountId));
         List<Plan> plans = Plan.findAllReverseOrder();
-        render(user, account, memberCount, plans);
+        render(account, memberCount, plans);
     }
 
     public static void update(int planId) {

@@ -26,3 +26,7 @@ insert into credit_card_type (description, dc) values ('DISCOVER', null);
 insert into billing (billing_type_id, credit_card_type_id, holder_name, account_number,
                      exp_month, exp_year, country, state, zip, dc)
 values (1, 1, 'free', 'free', 12, 2099, 'U.S.A', 'CA', '92130', null);                     
+
+/* Employee Status */
+insert into employee_status (status, dc) values ('Full Time', null);
+insert into employee_status (status, dc) values ('Part Time', null);

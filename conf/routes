@@ -35,6 +35,7 @@ DELETE  /schedules/{id}                         Schedules.delete
 # Members
 GET     /members                                Members.index
 POST    /members                                Members.create
+POST    /members/{id}                           Members.update
 DELETE  /members/{id}                           Members.delete
 
 # Settings
@@ -53,6 +54,11 @@ DELETE  /Facilities/{id}                        Facilities.delete
 GET     /Locations                              Locations.index
 POST    /Locations                              Locations.create
 DELETE  /Locations/{id}                         Locations.delete
+
+# Job Titles
+GET     /JobTitles                              JobTitles.index
+POST    /JobTitles                              JobTitles.create
+DELETE  /JobTitles/{id}                         JobTitles.delete
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

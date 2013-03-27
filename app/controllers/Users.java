@@ -1,12 +1,17 @@
 package controllers;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import play.data.validation.*;
 import play.libs.Codec;
 
 import helpers.StatusMessage;
+import models.EmployeeStatus;
+import models.JobTitle;
+import models.Location;
+import models.Member;
 import models.Role;
 import models.User;
 
@@ -15,7 +20,11 @@ public class Users extends BaseController {
 
     public static void show() {
         User user = Application.connectedUser();
-        render(user);
+        Member member = Member.findByUserId(user.id);
+        List<JobTitle> jobTitles = JobTitle.findByAccountId(member.account.id.intValue());
+        List<Location> locations = Location.findByAccountId(member.account.id.intValue());
+        List<EmployeeStatus> statuses = EmployeeStatus.findAll();
+        render(member, jobTitles, locations, statuses);
     }
 
     public static void update(Long id) {

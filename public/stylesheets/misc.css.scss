@@ -15,6 +15,14 @@
     padding-left: 20px;
     .name {
         padding-top: 12px;
+            a {
+                color: #ffffff;
+                text-decoration: none;
+            }
+            a:hover {
+                color: #81BEF7;
+                text-decoration: none;
+            }
     }
     .sections {
         height: 30px;
