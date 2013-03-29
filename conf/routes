@@ -15,6 +15,7 @@ GET     /signup/{uuid}                          Application.confirmRegistration
 GET     /confirmation/{uuid}                    Application.resendConfirmation
 
 # Users
+GET     /users/{id}                             Users.show
 POST    /users/{id}                             Users.update
 
 # Roles
@@ -42,23 +43,23 @@ DELETE  /members/{id}                           Members.delete
 GET     /settings                               Settings.index
 
 # Organizations
-GET     /Organizations                          Organizations.index
-POST    /Organizations                          Organizations.create
-DELETE  /Organizations/{id}                     Organizations.delete
+GET     /organizations                          Organizations.index
+POST    /organizations                          Organizations.create
+DELETE  /organizations/{id}                     Organizations.delete
 
 # Facilities
-POST    /Facilities                             Facilities.create
-DELETE  /Facilities/{id}                        Facilities.delete
+POST    /facilities                             Facilities.create
+DELETE  /facilities/{id}                        Facilities.delete
 
 # Locations
-GET     /Locations                              Locations.index
-POST    /Locations                              Locations.create
-DELETE  /Locations/{id}                         Locations.delete
+GET     /locations                              Locations.index
+POST    /locations                              Locations.create
+DELETE  /locations/{id}                         Locations.delete
 
 # Job Titles
-GET     /JobTitles                              JobTitles.index
-POST    /JobTitles                              JobTitles.create
-DELETE  /JobTitles/{id}                         JobTitles.delete
+GET     /jobTitles                              JobTitles.index
+POST    /jobTitles                              JobTitles.create
+DELETE  /jobTitles/{id}                         JobTitles.delete
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

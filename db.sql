@@ -21,19 +21,6 @@ create table user
     foreign key (role_id) references role (id)
 ) engine = innodb;
 
-/*
-create table user_role
-(
-    user_id bigint unsigned not null,
-    role_id smallint unsigned not null,
-
-    index user_role_idx1 (user_id),
-    foreign key (user_id) references user (id),
-    index user_role_idx2 (role_id),
-    foreign key (role_id) references role (id)
-) engine = innodb;
-*/
-
 create table plan
 (
     id tinyint unsigned not null auto_increment primary key,
@@ -175,7 +162,6 @@ create table member
     account_id int unsigned not null,
     schedule_id int unsigned not null,
     job_title_id int unsigned null,
-    location_id int unsigned null,
     employee_status_id tinyint unsigned null,
     address varchar(80) null,
     country varchar(40) null,
@@ -196,3 +182,16 @@ create table member
     index member_schedule_idx (schedule_id),
     foreign key (schedule_id) references schedule (id)
 ) engine = innodb;
+
+create table member_location
+(
+    member_id bigint unsigned not null,
+    location_id int unsigned not null,
+    primary key (member_id, location_id),
+
+    index member_location_member_idx (member_id),
+    foreign key (member_id) references member (id),
+    index member_location_location_idx (location_id),
+    foreign key (location_id) references location (id)
+) engine = innodb;
+

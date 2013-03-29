@@ -81,7 +81,7 @@
       <tbody>
         #{list items:members, as:'member'}
         <tr>
-          <td>${member.user.name}</td>
+          <td><a href="@{Users.show(member.user.id)}">${member.user.name}</a></td>
           <td>${member.user.email}</td>
           <td>${member.user.role.description}</td>
           <td>

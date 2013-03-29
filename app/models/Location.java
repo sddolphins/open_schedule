@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.Table;
 
@@ -26,6 +27,9 @@ public class Location extends Model {
     @ManyToOne(targetEntity = Facility.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "facility_id")
     public Facility facility = null;
+
+    @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
+    public List<MemberLocation> members = null;
 
     public Location(String name, Facility facility) {
         this.name = name;

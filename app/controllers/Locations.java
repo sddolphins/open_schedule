@@ -5,6 +5,7 @@ import java.util.List;
 
 import models.Account;
 import models.Facility;
+import models.MemberLocation;
 import models.Location;
 import models.Organization;
 
@@ -24,6 +25,17 @@ public class Locations extends BaseController {
 
     public static void delete(int locationId) {
         Location loc = Location.findById(new Long(locationId));
+
+        // Remove location from all members.
+        List<MemberLocation> memberLocations = loc.members;
+        if (memberLocations != null && memberLocations.size() > 0) {
+            for (int i = 0; i < memberLocations.size(); i++) {
+                MemberLocation ml = memberLocations.get(i);
+                ml.delete();
+            }
+        }
+
+        // Remove location.
         loc.delete();
     }
 }

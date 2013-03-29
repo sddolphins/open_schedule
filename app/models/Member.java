@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -40,9 +41,6 @@ public class Member extends Model {
     @Column(name = "job_title_id")
     public int jobTitleId;
 
-    @Column(name = "location_id")
-    public int locationId;
-
     @Column(name = "employee_status_id")
     public int employeeStatusId;
 
@@ -59,6 +57,9 @@ public class Member extends Model {
     @ManyToOne(targetEntity = Schedule.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
     public Schedule schedule = null;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    public List<MemberLocation> locations = null;
 
     public Member(User user, Account account, Schedule schedule) {
         this.user = user;

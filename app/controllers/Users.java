@@ -12,19 +12,20 @@ import models.EmployeeStatus;
 import models.JobTitle;
 import models.Location;
 import models.Member;
+import models.MemberLocation;
 import models.Role;
 import models.User;
 
 @Secure
 public class Users extends BaseController {
 
-    public static void show() {
-        User user = Application.connectedUser();
-        Member member = Member.findByUserId(user.id);
+    public static void show(Long userId) {
+        Member member = Member.findByUserId(userId);
         List<JobTitle> jobTitles = JobTitle.findByAccountId(member.account.id.intValue());
-        List<Location> locations = Location.findByAccountId(member.account.id.intValue());
+        List<Location> allLocations = Location.findByAccountId(member.account.id.intValue());
+        List<MemberLocation> memberLocations = member.locations;
         List<EmployeeStatus> statuses = EmployeeStatus.findAll();
-        render(member, jobTitles, locations, statuses);
+        render(member, jobTitles, allLocations, memberLocations, statuses);
     }
 
     public static void update(Long id) {

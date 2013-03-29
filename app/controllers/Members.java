@@ -12,7 +12,10 @@ import play.Logger;
 
 import helpers.StatusMessage;
 import models.Account;
+import models.Location;
 import models.Member;
+import models.MemberLocation;
+import models.MemberLocationPk;
 import models.Role;
 import models.Schedule;
 import models.User;
@@ -116,9 +119,9 @@ public class Members extends BaseController {
         String hireDate = values.get("hireDate")[0];
         String status = values.get("employeeStatus")[0];
         String jobTitle = values.get("jobTitle")[0];
-        String location = values.get("location")[0];
         String basePay = values.get("basePay")[0];
-        
+        String[] location = values.get("location");
+
         validation.required("Name", name);
         validation.required("Email", email);
         validation.email("Email", email);
@@ -141,7 +144,7 @@ public class Members extends BaseController {
             renderJSON(new StatusMessage(StatusMessage.ERROR, sb.toString(), ""));
         }
 
-        // Find member.
+        // Find existing member.
         Member member = Member.findById(id);
 
         // Update user info.
@@ -171,9 +174,6 @@ public class Members extends BaseController {
         if (jobTitle != null && jobTitle.trim().length() > 0) {
             member.jobTitleId = Integer.parseInt(jobTitle);
         }
-        if (location != null && location.trim().length() > 0) {
-            member.locationId = Integer.parseInt(location);
-        }
         if (status != null && status.trim().length() > 0) {
             member.employeeStatusId = Integer.parseInt(status);
         }
@@ -182,11 +182,38 @@ public class Members extends BaseController {
         }
         member.save();
 
+        // Remove existing locations.
+        List<MemberLocation> memberLocations = member.locations;
+        if (memberLocations != null && memberLocations.size() > 0) {
+            for (int i = 0; i < memberLocations.size(); i++) {
+                MemberLocation ml = memberLocations.get(i);
+                ml.delete();
+            }
+        }
+
+        // Insert new locations.
+        for (int i = 0; i < location.length; i++) {
+            int locationId = Integer.parseInt(location[i]);
+            //System.out.println("location id: " + locationId);            
+            new MemberLocation(member.id.longValue(), locationId);
+        }
+
         renderJSON(new StatusMessage(StatusMessage.SUCCESS, "", ""));
     }
 
     public static void delete(int memberId) {
         Member member = Member.findById(new Long(memberId));
+        
+        // Remove existing locations.
+        List<MemberLocation> memberLocations = member.locations;
+        if (memberLocations != null && memberLocations.size() > 0) {
+            for (int i = 0; i < memberLocations.size(); i++) {
+                MemberLocation ml = memberLocations.get(i);
+                ml.delete();
+            }
+        }
+
+        // Remove member.
         member.delete();
     }
 }
