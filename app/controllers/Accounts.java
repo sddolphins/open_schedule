@@ -10,12 +10,19 @@ import models.User;
 @Secure
 public class Accounts extends BaseController {
 
+    /**
+     * Get all accounts belong to current user.
+     */
     public static void index() {
         User user = Application.connectedUser();
         List<Account> accounts = Account.findByOwnerId(user.id.intValue());
         render(user, accounts);
     }
 
+    /**
+     * Create new account.
+     * @param String name
+     */
     public static void create(String name) {
         User owner = Application.connectedUser();
         Plan plan = Plan.findByDescription("FREE");

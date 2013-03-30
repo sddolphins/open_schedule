@@ -166,7 +166,25 @@
       <div class="span10">
         <select class="select2_location" id="location" name="location" multiple disabled >
 %{
+          facility = "";
+          newGroup = null;
           for (loc in allLocations) {
+            if (facility != loc.facility.name) {
+              if (newGroup) {
+}%
+                </optgroup>
+                <optgroup label="${loc.facility.name}">
+%{
+              }
+              else {
+}%
+                <optgroup label="${loc.facility.name}">
+%{              
+              }
+              facility = loc.facility.name;
+              newGroup = true;
+            }
+
             found = null;
             for (ml in memberLocations) {
               if (loc.id == ml.locationId) {
@@ -187,6 +205,8 @@
             }
           }
 }%
+          </optgroup>
+        </select>
       </div>
     </div>
   </form>
