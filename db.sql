@@ -195,3 +195,154 @@ create table member_location
     foreign key (location_id) references location (id)
 ) engine = innodb;
 
+create table shift_type
+(
+    id tinyint unsigned not null auto_increment primary key,
+    name varchar(40) not null,
+    dc timestamp default 0,
+    lu timestamp default now() on update now()
+) engine = innodb;
+
+create table shift_shift
+(
+    id tinyint unsigned not null auto_increment primary key,
+    name varchar(40) not null,
+    dc timestamp default 0,
+    lu timestamp default now() on update now()
+) engine = innodb;
+
+create table shift_status
+(
+    id tinyint unsigned not null auto_increment primary key,
+    name varchar(40) not null,
+    sort_order smallint not null,
+    dc timestamp default 0,
+    lu timestamp default now() on update now()
+) engine = innodb;
+
+create table shift_request_status
+(
+    id tinyint unsigned not null auto_increment primary key,
+    name varchar(40) not null,
+    dc timestamp default 0,
+    lu timestamp default now() on update now()
+) engine = innodb;
+
+create table work_type
+(
+    id tinyint unsigned not null auto_increment primary key,
+    name varchar(40) not null,
+    dc timestamp default 0,
+    lu timestamp default now() on update now()
+) engine = innodb;
+
+create table work_subtype
+(
+    id tinyint unsigned not null auto_increment primary key,
+    name varchar(40) not null,
+    dc timestamp default 0,
+    lu timestamp default now() on update now()
+) engine = innodb;
+
+create table overtime_type
+(
+    id tinyint unsigned not null auto_increment primary key,
+    name varchar(40) not null,
+    multiplier decimal(3,2) not null,
+    dc timestamp default 0,
+    lu timestamp default now() on update now()
+) engine = innodb;
+
+create table shift
+(
+    id bigint unsigned not null auto_increment primary key,
+    schedule_id int unsigned not null,
+    shift_type_id tinyint unsigned not null,
+    shift_shift_id tinyint unsigned not null,
+    shift_status_id tinyint unsigned not null,
+    work_type_id tinyint unsigned not null,
+    work_subtype_id tinyint unsigned,
+    date_start datetime not null,
+    date_end datetime not null,
+    contact varchar(80),
+    comment varchar(255),
+    dc timestamp default 0,
+    lu timestamp default now() on update now(),
+
+    index shift_schedule_idx (schedule_id),
+    foreign key (schedule_id) references schedule (id),
+    index shift_shift_type_idx (shift_type_id),
+    foreign key (shift_type_id) references shift_type (id),
+    index shift_shift_shift_idx (shift_shift_id),
+    foreign key (shift_shift_id) references shift_shift (id),
+    index shift_shift_status_idx (shift_status_id),
+    foreign key (shift_status_id) references shift_status (id),
+    index shift_work_type_idx (work_type_id),
+    foreign key (work_type_id) references work_type (id),
+    foreign key (work_subtype_id) references work_subtype (id)
+) engine = innodb;
+
+create table shift_restriction
+(
+    id int unsigned not null auto_increment primary key,
+    shift_id bigint unsigned not null,
+    location_id int unsigned not null,
+    job_title_id int unsigned not null,
+    active bool default 1,
+    dc timestamp default 0,
+    lu timestamp default now() on update now(),
+
+    index shift_restriction_shift_idx (shift_id),
+    foreign key (shift_id) references shift (id),
+    foreign key (location_id) references location (id),
+    foreign key (job_title_id) references job_title (id)
+) engine = innodb;
+
+create table scheduled_shift
+(
+    id bigint unsigned not null auto_increment primary key,
+    shift_id bigint unsigned not null,
+    member_id bigint unsigned not null,
+    dc timestamp default 0,
+    lu timestamp default now() on update now(),
+
+    index scheduled_shift_shift_idx (shift_id),
+    foreign key (shift_id) references shift (id),
+    index scheduled_shift_member_idx (member_id),
+    foreign key (member_id) references member (id)
+) engine = innodb;
+
+create table self_schedule_shift
+(
+    id bigint unsigned not null auto_increment primary key,
+    shift_id bigint unsigned not null,
+    signup_date_start datetime,
+    num_needed smallint unsigned not null default 1,
+    num_awarded smallint unsigned not null default 0,
+    num_filled smallint unsigned not null default 0,
+    dc timestamp default 0,
+    lu timestamp default now() on update now(),
+
+    index self_schedule_shift_shift_idx (shift_id),
+    foreign key (shift_id) references shift (id)
+) engine = innodb;
+
+create table self_schedule_request
+(
+    id bigint unsigned not null auto_increment primary key,
+    self_schedule_shift_id bigint unsigned not null,
+    member_id bigint unsigned not null,
+    request_status_id tinyint unsigned not null,
+    date_requested datetime not null,
+    date_approved_denied datetime,
+    comment varchar(255),
+    manager_comment varchar(255),
+    dc timestamp default 0,
+    lu timestamp default now() on update now(),
+
+    index self_schedule_request_sss_idx (self_schedule_shift_id),
+    foreign key (self_schedule_shift_id) references self_schedule_shift (id),
+    index self_schedule_request_member_idx (member_id),
+    foreign key (member_id) references member (id),
+    foreign key (request_status_id) references shift_request_status (id)
+) engine = innodb;

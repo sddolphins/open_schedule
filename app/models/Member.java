@@ -14,7 +14,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import play.data.validation.Email;
 import play.data.validation.Required;
 import play.db.jpa.Model;
 
@@ -60,6 +59,9 @@ public class Member extends Model {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     public List<MemberLocation> locations = null;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    public List<SelfScheduleRequest> ssRequests = null;
 
     public Member(User user, Account account, Schedule schedule) {
         this.user = user;

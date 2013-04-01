@@ -29,14 +29,13 @@ public class Schedule extends Model {
     @OneToMany(mappedBy = "schedule", fetch = FetchType.LAZY)
     public List<Member> members = null;
 
+    @OneToMany(mappedBy = "schedule", fetch = FetchType.LAZY)
+    public List<Shift> shifts = null;
+
     public Schedule(String name, Account account) {
         this.name = name;
         this.account = account;
         this.dc = null;
         save();
-    }
-
-    public static List<Schedule> findByAccount(int accountId) {
-        return Schedule.find("account_id", accountId).fetch();
     }
 }
