@@ -67,6 +67,7 @@ insert into work_type (name, dc) values ('Scheduled On-Call', null);
 insert into work_type (name, dc) values ('Scheduled Non-Duty', null);
 
 /* Work Subtype */
+insert into work_subtype (name, dc) values ('None', null);
 insert into work_subtype (name, dc) values ('PTO', null);
 insert into work_subtype (name, dc) values ('Sick', null);
 insert into work_subtype (name, dc) values ('Personal', null);

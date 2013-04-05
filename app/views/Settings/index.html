@@ -14,7 +14,7 @@
       <a href="#">Settings</a>
     </div>
     <div class="section">
-      <a href="@{Members.index(account.id, schedule.id)}">Members</a>
+      <a href="@{Members.index(schedule.id)}">Members</a>
     </div>
   </div>
 </div>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td><label>Account Name</label></td>
-            <td><a href="@{Accounts.index}">${account.name} (owner: ${account.owner.name})</a></td>
+            <td><a href="@{Accounts.index}">${schedule.account.name} (owner: ${schedule.account.owner.name})</a></td>
           </tr>
         </table>
       </div>

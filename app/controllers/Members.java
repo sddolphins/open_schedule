@@ -24,13 +24,12 @@ import notifiers.Notifier;
 @Secure
 public class Members extends BaseController {
 
-    public static void index(int accountId, int scheduleId) {
-        System.out.println("Members.index(): accountId = " + accountId + ", scheduleId = " + scheduleId);
+    public static void index(int scheduleId) {
         User user = connectedUser();
         Schedule schedule = Schedule.findById(new Long(scheduleId));
         List<Member> members = schedule.members;
         List<Role> roles = Role.findAll();
-        render(user, accountId, schedule, members, roles);
+        render(user, schedule, members, roles);
     }
 
     public static void create() {

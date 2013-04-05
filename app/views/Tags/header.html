@@ -24,17 +24,17 @@
       <nav>
         <ul class="nav pull-right">
           #{if _user}
-            <li id="fat-menu" class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                Menu <b class="caret"></b>
-              </a>
-              <ul class="dropdown-menu">
-                <li class="nav-header">Shift Management</li>
-                <li><a href="#"><i class="icon-calendar"></i> Create Scheduled Shift</a></li>
-                <li><a href="#"><i class="icon-calendar"></i> Create Self-Schedule Shift</a></li>
-                <li><a href="#"><i class="icon-calendar"></i> Create Open Shift</a></li>
-              </ul>
-            </li>
+            #{if _schedule}
+              <li id="fat-menu" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  Menu <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="nav-header">Shift Management</li>
+                  <li><a href="@{Shifts.createShift(_schedule.id)}"><i class="icon-calendar"></i>Create / Post New Shift</a></li>
+                </ul>
+              </li>
+            #{/if}
             <li><a href="@{Application.index}">Home</a></li>
             <li><a href="#">Help</a></li>
             <li id="fat-menu" class="dropdown">

@@ -28,4 +28,8 @@ public class ShiftStatus extends Model {
         this.dc = null;
         save();
     }
+
+    public static ShiftStatus findByName(String name) {
+        return find("name", name).first();
+    }
 }

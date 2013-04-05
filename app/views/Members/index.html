@@ -11,7 +11,7 @@
   </div>
   <div class="sections">
     <div class="section">
-      <a href="@{Settings.index(accountId, schedule.id)}">Settings</a>
+      <a href="@{Settings.index(schedule.id)}">Settings</a>
     </div>
     <div class="section decorate">
       <a href="#">Members</a>
@@ -34,7 +34,7 @@
                 <span class="add-on"><i class="icon-user"></i></span>
                 <input type="text" id="name" name="name" placeholder="Display Name (e.g. John Smith)" />
               </div>
-              <input type="hidden" id="account_id" name="account_id" value="${accountId}" />
+              <input type="hidden" id="account_id" name="account_id" value="${schedule.account.id}" />
               <input type="hidden" id="schedule_id" name="schedule_id" value="${schedule.id}" />
             </td>
             <td>
@@ -66,7 +66,7 @@
   <br />
   <div id="max_members_warning" class="alert alert-info" style="display:none;">
     <i class="icon-info-sign"></i> You have reached the maximum number of schedule members for this account.<br />
-    You can either remove inactive members or <a href="@{Plans.index(accountId)}"><strong>upgrade your plan</strong></a>.
+    You can either remove inactive members or <a href="@{Plans.index(schedule.account.id)}"><strong>upgrade your plan</strong></a>.
   </div>
   <div>
     <table class="table table-bordered table-striped">

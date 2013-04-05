@@ -4,4 +4,5 @@
 validation.required = %s is required and cannot be blank.
 validation.email = %s is invalid.
 validation.minSize = %s must be at least 6 characters.
-validation.equals = %s does not match %s
+validation.equals = %s does not match %s.
+validation.min = %s cannot be lower than %s.

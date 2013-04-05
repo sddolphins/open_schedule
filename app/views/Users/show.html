@@ -39,177 +39,194 @@
     <ul id="update_error_message"></ul>
   </div>
 
-  <form id="member_profile" accept-charset="utf-8">
-    <div class="row-fluid">
-      <div class="span2"><label>Display Name</label></div>
-      <div class="span10">
-        <div class="input-prepend">
-          <span class="add-on field_icon"><i class="icon-user"></i></span>
-          <input class="input-medium uneditable-input" type="text" id="name" name="name" value="${member.user.name}" disabled />
-        </div>
-      </div>
+  <div class="row-fluid">
+    <div class="span2" style="text-align:center">
+      <br />
+      <img src="http://www.gravatar.com/avatar/${models.User.gravatarHash(member.user.email).raw()}?s=120"/>
+      <br />
+      <a href="http://gravatar.com/emails">Change</a>
     </div>
 
-    <div class="row-fluid">
-      <div class="span2"><label>Email</label></div>
-      <div class="span4">
-        <div class="input-prepend">
-          <span class="add-on field_icon"><i class="icon-envelope"></i></span>
-          <input class="input-medium uneditable-input" type="text" id="email" name="email" value="${member.user.email}" disabled />
+    <div class="span10">
+      <form id="member_profile" accept-charset="utf-8">
+        <div class="row-fluid">
+          <div class="span2"><label>Display Name</label></div>
+          <div class="span4">
+            <div class="input-prepend">
+              <span class="add-on field_icon"><i class="icon-user"></i></span>
+              <input class="input-medium uneditable-input" type="text" id="name" name="name" value="${member.user.name}" disabled />
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="span2"><label>Phone</label></div>
-      <div class="span4">
-        <div class="input-prepend">
-          <span class="add-on field_icon"><i class="icon-phone"></i></span>
-          <input class="input-medium uneditable-input" type="text" id="phone" name="phone" value="${member.phone}" disabled />
+
+        <div class="row-fluid">
+          <div class="span2"><label>Email</label></div>
+          <div class="span4">
+            <div class="input-prepend">
+              <span class="add-on field_icon"><i class="icon-envelope"></i></span>
+              <input class="input-medium uneditable-input" type="text" id="email" name="email" value="${member.user.email}" disabled />
+            </div>
+          </div>
+          <div class="span2"><label>Phone</label></div>
+          <div class="span4">
+            <div class="input-prepend">
+              <span class="add-on field_icon"><i class="icon-phone"></i></span>
+              <input class="input-medium bfh-phone uneditable-input" type="text" data-format="(ddd) ddd-dddd" id="phone" name="phone" data-number="${member.phone}" disabled />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row-fluid">
-      <div class="span2"><label>Password</label></div>
-      <div class="span4">
-        <div class="input-prepend">
-          <span class="add-on field_icon"><i class="icon-key"></i></span>
-          <input class="input-medium uneditable-input" type="password" id="password" name="password" value="" disabled />
+        <div class="row-fluid">
+          <div class="span2"><label>Password</label></div>
+          <div class="span4">
+            <div class="input-prepend">
+              <span class="add-on field_icon"><i class="icon-key"></i></span>
+              <input class="input-medium uneditable-input" type="password" id="password" name="password" value="" disabled />
+            </div>
+          </div>
+          <div class="span2"><label>Confirmation</label></div>
+          <div class="span4">
+            <div class="input-prepend">
+              <span class="add-on field_icon"><i class="icon-key"></i></span>
+              <input class="input-medium uneditable-input" type="password" id="password2" name="password2" value="" disabled />
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="span2"><label>Confirmation</label></div>
-      <div class="span4">
-        <div class="input-prepend">
-          <span class="add-on field_icon"><i class="icon-key"></i></span>
-          <input class="input-medium uneditable-input" type="password" id="password2" name="password2" value="" disabled />
+
+        <div class="row-fluid">
+          <div class="span2"><label>Address</label></div>
+          <div class="span10">
+            <input class="input-xlarge uneditable-input" type="text" id="address" name="address" value="${member.address}" disabled />
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row-fluid">
-      <div class="span2"><label>Address</label></div>
-      <div class="span10">
-        <input class="input-xlarge uneditable-input" type="text" id="address" name="address" value="${member.address}" disabled />
-      </div>
-    </div>
-
-    <div class="row-fluid">
-      <div class="span2"><label>City</label></div>
-      <div class="span4">
-        <input class="input-medium uneditable-input" type="text" id="city" name="city" value="${member.city}" disabled />
-      </div>
-      <div class="span2"><label>State/Province</label></div>
-      <div class="span4">
-        <select class="input-medium bfh-states uneditable-input" id="state" name="state" data-country="country" data-state="${member.state}" disabled ></select>
-      </div>
-    </div>
-
-    <div class="row-fluid">
-      <div class="span2"><label>Zip/Postal</label></div>
-      <div class="span4">
-        <input class="input-medium uneditable-input" type="text" id="zip" name="zip" value="${member.zip}" disabled />
-      </div>
-      <div class="span2"><label>Country</label></div>
-      <div class="span4">
-        #{if member.country != null}
-          <select class="input-medium bfh-countries uneditable-input" id="country" name="country" data-country="${member.country}" disabled ></select>
-        #{/if}
-        #{else}
-          <select class="input-medium bfh-countries uneditable-input" id="country" name="country" data-country="US" disabled ></select>
-        #{/else}
-      </div>
-    </div>
-
-    <div class="row-fluid">
-      <div class="span2"><label>Hire Date</label></div>
-      <div class="span4">
-        <div class="input-prepend">
-          <span class="add-on field_icon"><i class="icon-th"></i></span>
-          <input class="datepicker input-medium uneditable-input" type="text" id="hireDate" name="hireDate" data-date-format="mm/dd/yyyy" value="${member.hireDate}" disabled />
+        <div class="row-fluid">
+          <div class="span2"><label>City</label></div>
+          <div class="span4">
+            <input class="input-medium uneditable-input" type="text" id="city" name="city" value="${member.city}" disabled />
+          </div>
+          <div class="span2"><label>State/Province</label></div>
+          <div class="span4">
+            <select class="input-medium bfh-states uneditable-input" id="state" name="state" data-country="country" data-state="${member.state}" disabled ></select>
+          </div>
         </div>
-      </div>
-      <div class="span2"><label>Status</label></div>
-      <div class="span4">
-        <select class="uneditable-input" id="employeeStatus" name="employeeStatus" disabled >
-          #{list items:statuses, as:'es'}
-            #{if es.id == member.employeeStatusId}
-              <option value="${es.id}" selected="selected"> ${es.status} </option>
+
+        <div class="row-fluid">
+          <div class="span2"><label>Zip/Postal</label></div>
+          <div class="span4">
+            <input class="input-medium uneditable-input" type="text" id="zip" name="zip" value="${member.zip}" disabled />
+          </div>
+          <div class="span2"><label>Country</label></div>
+          <div class="span4">
+            #{if member.country != null}
+              <select class="input-medium bfh-countries uneditable-input" id="country" name="country" data-country="${member.country}" disabled ></select>
             #{/if}
             #{else}
-              <option value="${es.id}"> ${es.status} </option>
+              <select class="input-medium bfh-countries uneditable-input" id="country" name="country" data-country="US" disabled ></select>
             #{/else}
-          #{/list}
-        </select>
-      </div>
-    </div>
+          </div>
+        </div>
 
-    <div class="row-fluid">
-      <div class="span2"><label>Job Title</label></div>
-      <div class="span4">
-        <select class="uneditable-input" id="jobTitle" name="jobTitle" disabled >
-          #{list items:jobTitles, as:'jt'}
-            #{if jt.id == member.jobTitleId}
-              <option value="${jt.id}" selected="selected"> ${jt.name} </option>
-            #{/if}
-            #{else}
-              <option value="${jt.id}"> ${jt.name} </option>
-            #{/else}
-          #{/list}
-        </select>
-      </div>
-      <div class="span2"><label>Base Pay</label></div>
-      <div class="span4">
-        <input class="input-medium uneditable-input" type="text" id="basePay" name="basePay" value="${member.basePay}" disabled />
-      </div>
-    </div>
+        <div class="row-fluid">
+          <div class="span2"><label>Hire Date</label></div>
+          <div class="span4">
+            <div class="input-prepend">
+              <span class="add-on field_icon"><i class="icon-th"></i></span>
+              <input class="datepicker input-medium uneditable-input" type="text" id="hireDate" name="hireDate" data-date-format="mm/dd/yyyy" value="${member.hireDate}" disabled />
+            </div>
+          </div>
+          <div class="span2"><label>Status</label></div>
+          <div class="span4">
+            <select class="uneditable-input" id="employeeStatus" name="employeeStatus" disabled >
+              #{list items:statuses, as:'es'}
+                #{if es.id == member.employeeStatusId}
+                  <option value="${es.id}" selected="selected"> ${es.status} </option>
+                #{/if}
+                #{else}
+                  <option value="${es.id}"> ${es.status} </option>
+                #{/else}
+              #{/list}
+            </select>
+          </div>
+        </div>
 
-    <div class="row-fluid">
-      <div class="span2"><label>Location(s)</label></div>
-      <div class="span10">
-        <select class="select2_location" id="location" name="location" multiple disabled >
+        <div class="row-fluid">
+          <div class="span2"><label>Job Title</label></div>
+          <div class="span4">
+            <select class="uneditable-input" id="jobTitle" name="jobTitle" disabled >
+              #{list items:jobTitles, as:'jt'}
+                #{if jt.id == member.jobTitleId}
+                  <option value="${jt.id}" selected="selected"> ${jt.name} </option>
+                #{/if}
+                #{else}
+                  <option value="${jt.id}"> ${jt.name} </option>
+                #{/else}
+              #{/list}
+            </select>
+          </div>
+          <div class="span2"><label>Base Pay</label></div>
+          <div class="span4">
+            <input class="input-medium uneditable-input" type="text" id="basePay" name="basePay" value="${member.basePay}" disabled />
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span2"><label>Location(s)</label></div>
+          <div class="span10">
+            <select class="select2_location" id="location" name="location" multiple disabled >
 %{
-          facility = "";
-          newGroup = null;
-          for (loc in allLocations) {
-            if (facility != loc.facility.name) {
-              if (newGroup) {
+              facility = "";
+              newGroup = null;
+              for (loc in allLocations) {
+                if (facility != loc.facility.name) {
+                  if (newGroup) {
 }%
-                </optgroup>
-                <optgroup label="${loc.facility.name}">
+                    </optgroup>
+                    <optgroup label="${loc.facility.name}">
 %{
-              }
-              else {
+                  }
+                  else {
 }%
-                <optgroup label="${loc.facility.name}">
+                    <optgroup label="${loc.facility.name}">
 %{              
-              }
-              facility = loc.facility.name;
-              newGroup = true;
-            }
+                  }
+                  facility = loc.facility.name;
+                  newGroup = true;
+                }
 
-            found = null;
-            for (ml in memberLocations) {
-              if (loc.id == ml.locationId) {
-                found = true;
-                break;
-              }
-            }
+                found = null;
+                for (ml in memberLocations) {
+                  if (loc.id == ml.locationId) {
+                    found = true;
+                    break;
+                  }
+                }
 
-            if (found) {
+                if (found) {
 }%
-              <option value="${loc.id}" selected="selected"> ${loc.name} </option>
+                  <option value="${loc.id}" selected="selected"> ${loc.name} </option>
 %{
-            }
-            else {
+                }
+                else {
 }%
-              <option value="${loc.id}"> ${loc.name} </option>
+                  <option value="${loc.id}"> ${loc.name} </option>
 %{
-            }
-          }
+                }
+              }
 }%
-          </optgroup>
-        </select>
-      </div>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+          </div>
+        </div>
+
+      </form>
     </div>
-  </form>
+  </div>
 
 </div>
 
@@ -218,6 +235,7 @@
 <script src="@{'/public/javascripts/bootstrap-formhelpers-countries.en_US.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/bootstrap-formhelpers-states.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/bootstrap-formhelpers-states.en_US.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/bootstrap-formhelpers-phone.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/bootstrap-datepicker.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/select2.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/flash-message.js'}" type="text/javascript" charset="${_response_encoding}"></script>
@@ -299,11 +317,6 @@
       return false;
     });
   });
-
-  function disabler(event) {
-    event.preventDefault();
-    return false;
-  }
 
   function toggleForm(enable) {
     if (enable) {

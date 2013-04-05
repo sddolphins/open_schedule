@@ -286,16 +286,14 @@ create table shift_restriction
 (
     id int unsigned not null auto_increment primary key,
     shift_id bigint unsigned not null,
-    location_id int unsigned not null,
-    job_title_id int unsigned not null,
-    active bool default 1,
+    location_id int unsigned default null,
+    job_title_id int unsigned default null,
+    active bool not null default 1,
     dc timestamp default 0,
     lu timestamp default now() on update now(),
 
     index shift_restriction_shift_idx (shift_id),
-    foreign key (shift_id) references shift (id),
-    foreign key (location_id) references location (id),
-    foreign key (job_title_id) references job_title (id)
+    foreign key (shift_id) references shift (id)
 ) engine = innodb;
 
 create table scheduled_shift

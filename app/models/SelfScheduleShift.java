@@ -41,13 +41,10 @@ public class SelfScheduleShift extends Model {
     @OneToMany(mappedBy = "sss", fetch = FetchType.LAZY)
     public List<SelfScheduleRequest> requests = null;
 
-    public SelfScheduleShift(Shift shift, Date signupDateStart, int numNeeded,
-                              int numAwarded, int numFilled) {
+    public SelfScheduleShift(Shift shift, Date signupDateStart, int numNeeded) {
         this.shift = shift;
         this.signupDateStart = signupDateStart;
         this.numNeeded = numNeeded;
-        this.numAwarded = numAwarded;
-        this.numFilled = numFilled;
         this.dc = null;
         save();
     }

@@ -61,6 +61,10 @@ GET     /jobTitles                              JobTitles.index
 POST    /jobTitles                              JobTitles.create
 DELETE  /jobTitles/{id}                         JobTitles.delete
 
+# Shifts
+GET     /shifts                                 Shifts.index
+POST    /shifts/{id}                            Shifts.update
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 

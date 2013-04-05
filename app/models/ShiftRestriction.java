@@ -1,6 +1,7 @@
 package models;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,5 +39,9 @@ public class ShiftRestriction extends Model {
         this.active = active;
         this.dc = null;
         save();
+    }
+
+    public static List<ShiftRestriction> findByShiftId(int shiftId) {
+        return ShiftRestriction.find("shift_id", shiftId).fetch();
     }
 }

@@ -68,14 +68,14 @@
   </div>
 
   <ul class="rows">
-    #{list items:account.schedules, as:'schedule'}
+    #{list items:account.schedules, as:'sched'}
     <li>
       <div class="title">
-        <a href="#">${schedule.name}</a>
+        <a href="@{Shifts.index(sched.id)}">${sched.name}</a>
         <div class="action">
-          <a href="@{Settings.index(account.id, schedule.id)}">Settings</a>&nbsp;&nbsp;
-          <a href="@{Members.index(account.id, schedule.id)}">Members</a>&nbsp;&nbsp;
-          <a href="#" onclick="deleteSchedule(${schedule.id}, '${schedule.name}')">Remove</a>
+          <a href="@{Settings.index(sched.id)}">Settings</a>&nbsp;&nbsp;
+          <a href="@{Members.index(sched.id)}">Members</a>&nbsp;&nbsp;
+          <a href="#" onclick="deleteSchedule(${sched.id}, '${sched.name}')">Remove</a>
         </div>
       </div>
     </li>
