@@ -1,16 +1,94 @@
 #{extends 'main.html' /}
 #{set title:'Shifts' /}
 #{set 'moreStyles'}
-  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/misc.css.scss'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/box.css.scss'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/datepicker.css'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/prettyCheckable.css'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/shift.css.scss'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/widget.css.scss'}">
 #{/set}
 
-<div>
-  Shift Dashboard ...
+<div id="shift_page">
+
+  <div class="ui-layout-center">
+    #{viewHeader /}
+  </div>
+
+  <div class="ui-layout-west west_pane">
+    #{widget locations:locations /}
+  </div>
+
+</div>
+
+<div class="modal hide fade" id="myModal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>Settings</h3>
+  </div>
+  <div class="modal-body">
+    <p>Here settings can be configured...</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal">Close</a>
+    <a href="#" class="btn btn-primary">Save changes</a>
+  </div>
 </div>
 
 #{set 'moreScripts'}
+<script src="@{'/public/javascripts/jquery.layout-latest.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/bootstrap-datepicker.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/prettyCheckable.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/moment.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/jquery.ba-tinypubsub.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+
 <script type="text/javascript">
   $(function() {
+    // Initialize scheduling period start date.
+    var now = new moment();
+    $('#lbl_spStartDate').text(now.format('dddd, MMMM Do YYYY'));
+
+    // Page layout settings.
+    $('#shift_page').layout({
+      west__size: 250,
+      applyDefaultStyles: true
+    });
+
+    // Subscribe to location change event.
+    $.subscribe("/displayOptions/location", function(e, data) {
+      if (data) {
+        alert("location: " + data.location);
+      }
+    });
+
+    // Subscribe to current view change event.
+    $.subscribe("/displayOptions/view", function(e, data) {
+      if (data) {
+        alert("view: " + data.view);
+      }
+    });
+
+    // Subscribe to scheduling period start date change event.
+    $.subscribe("/schedulingPeriod/startDate", function(e, data) {
+      if (data) {
+        var d = moment(data.startDate);
+        $('#lbl_spStartDate').text(d.format('dddd, MMMM Do YYYY'));
+      }
+    });
+
+    // Subscribe to view by change event.
+    $.subscribe("/viewHeader/viewBy", function(e, data) {
+      if (data) {
+        alert("view by: " + data.viewBy);
+      }
+    });
+
+    // Subscribe to date change event.
+    $.subscribe("/viewHeader/dateChange", function(e, data) {
+      if (data) {
+        alert("date change: " + data.dateChange);
+      }
+    });
+
   });
 </script>
 #{/set}

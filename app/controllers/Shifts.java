@@ -32,7 +32,8 @@ public class Shifts extends BaseController {
     public static void index(int scheduleId) {
         //System.out.println("Shifts.index()");
         Schedule schedule = Schedule.findById(new Long(scheduleId));
-        render(schedule);
+        List<Location> locations = Location.findByAccountId(schedule.account.id.intValue());
+        render(schedule, locations);
     }
 
     public static void createShift(int scheduleId) {
