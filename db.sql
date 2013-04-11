@@ -94,7 +94,7 @@ create table schedule
     account_id int unsigned not null,
     dc timestamp default 0,
     lu timestamp default now() on update now(),
-    
+
     index schedule_account_idx (account_id),
     foreign key (account_id) references account (id)
 ) engine = innodb;
@@ -118,7 +118,7 @@ create table facility
     organization_id int unsigned not null,
     dc timestamp default 0,
     lu timestamp default now() on update now(),
-    
+
     index facility_organization_idx (organization_id),
     foreign key (organization_id) references organization (id)
 ) engine = innodb;
@@ -130,7 +130,7 @@ create table location
     facility_id int unsigned not null,
     dc timestamp default 0,
     lu timestamp default now() on update now(),
-    
+
     index location_facility_idx (facility_id),
     foreign key (facility_id) references facility (id)
 ) engine = innodb;
@@ -173,7 +173,7 @@ create table member
     base_pay decimal(5,2) null,
     dc timestamp default 0,
     lu timestamp default now() on update now(),
-    
+
     unique key member_unique_key (user_id, account_id, schedule_id),
     index member_user_idx (user_id),
     foreign key (user_id) references user (id),
@@ -257,6 +257,7 @@ create table shift
 (
     id bigint unsigned not null auto_increment primary key,
     schedule_id int unsigned not null,
+    location_id int unsigned not null,
     shift_type_id tinyint unsigned not null,
     shift_shift_id tinyint unsigned not null,
     shift_status_id tinyint unsigned not null,
@@ -271,6 +272,8 @@ create table shift
 
     index shift_schedule_idx (schedule_id),
     foreign key (schedule_id) references schedule (id),
+    index shift_location_idx (location_id),
+    foreign key (location_id) references location (id),
     index shift_shift_type_idx (shift_type_id),
     foreign key (shift_type_id) references shift_type (id),
     index shift_shift_shift_idx (shift_shift_id),
@@ -293,6 +296,18 @@ create table shift_restriction
     lu timestamp default now() on update now(),
 
     index shift_restriction_shift_idx (shift_id),
+    foreign key (shift_id) references shift (id)
+) engine = innodb;
+
+create table open_shift
+(
+    id bigint unsigned not null auto_increment primary key,
+    shift_id bigint unsigned not null,
+    num_needed smallint unsigned not null default 1,
+    dc timestamp default 0,
+    lu timestamp default now() on update now(),
+
+    index self_schedule_shift_shift_idx (shift_id),
     foreign key (shift_id) references shift (id)
 ) engine = innodb;
 

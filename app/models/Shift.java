@@ -1,6 +1,7 @@
 package models;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -19,11 +20,11 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "shift")
 public class Shift extends Model {
-    
+
     @Required
     @Column(name = "date_start")
     public Date dateStart;
-    
+
     @Required
     @Column(name = "date_end")
     public Date dateEnd;
@@ -35,6 +36,10 @@ public class Shift extends Model {
     @ManyToOne(targetEntity = Schedule.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
     public Schedule schedule = null;
+
+    @ManyToOne(targetEntity = Location.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id")
+    public Location location = null;
 
     @OneToOne(targetEntity = ShiftType.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "shift_type_id")
@@ -59,12 +64,13 @@ public class Shift extends Model {
     @OneToMany(mappedBy = "shift", fetch = FetchType.LAZY)
     public List<ShiftRestriction> restrictions = null;
 
-    public Shift(Date dateStart, Date dateEnd, Schedule schedule, ShiftType shiftType,
-                 ShiftShift shiftShift, ShiftStatus shiftStatus, WorkType workType,
-                 WorkSubtype workSubtype, String contact, String comment) {
+    public Shift(Date dateStart, Date dateEnd, Schedule schedule, Location location,
+                 ShiftType shiftType, ShiftShift shiftShift, ShiftStatus shiftStatus,
+                 WorkType workType, WorkSubtype workSubtype, String contact, String comment) {
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
         this.schedule = schedule;
+        this.location = location;
         this.shiftType = shiftType;
         this.shiftShift = shiftShift;
         this.shiftStatus = shiftStatus;
@@ -80,6 +86,10 @@ public class Shift extends Model {
         return Shift.find("schedule_id", scheduleId).fetch();
     }
 
+    public static List<Shift> findByLocationId(int locationId) {
+        return Shift.find("location_id", locationId).fetch();
+    }
+
     public static List<Shift> findByShiftTypeId(int shiftTypeId) {
         return Shift.find("shift_type_id", shiftTypeId).fetch();
     }
@@ -90,5 +100,16 @@ public class Shift extends Model {
 
     public static List<Shift> findByShiftStatusId(int shiftStatusId) {
         return Shift.find("shift_status_id", shiftStatusId).fetch();
+    }
+
+    public static List<Shift> findCalendarViewShifts(Date startDate, int viewByDays,
+                                                     int scheduleId, int locationId) {
+        Calendar endDate = Calendar.getInstance();
+        endDate.setTime(startDate);
+        endDate.add(Calendar.DATE, viewByDays);
+
+        return Shift.find("schedule_id = ? and location_id = ? and " +
+                          "date_start >= ? and date_start < ?",
+                          scheduleId, locationId, startDate, endDate.getTime()).fetch();
     }
 }

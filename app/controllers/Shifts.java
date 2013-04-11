@@ -6,15 +6,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import play.data.validation.*;
 
 import helpers.StatusMessage;
+import models.CalendarShift;
 import models.JobTitle;
 import models.Location;
 import models.Member;
+import models.OpenShift;
 import models.Schedule;
 import models.ScheduledShift;
 import models.SelfScheduleShift;
@@ -33,7 +36,8 @@ public class Shifts extends BaseController {
         //System.out.println("Shifts.index()");
         Schedule schedule = Schedule.findById(new Long(scheduleId));
         List<Location> locations = Location.findByAccountId(schedule.account.id.intValue());
-        render(schedule, locations);
+        List<JobTitle> jobTitles = JobTitle.findByAccountId(schedule.account.id.intValue());
+        render(schedule, locations, jobTitles);
     }
 
     public static void createShift(int scheduleId) {
@@ -56,8 +60,9 @@ public class Shifts extends BaseController {
         String sStartTime = values.get("startTime")[0];
         String sEndDate = values.get("endDate")[0];
         String sEndTime = values.get("endTime")[0];
-        String sWorkShift = values.get("workShift")[0];
+        String shiftLocation = values.get("shiftLocation")[0];
         String contact = values.get("contact")[0];
+        String sWorkShift = values.get("workShift")[0];
         String sWorkType = values.get("workType")[0];
         String sWorkSubtype = values.get("workSubtype")[0];
         String comment = values.get("comment")[0];
@@ -74,6 +79,7 @@ public class Shifts extends BaseController {
         validation.required("Shift start time", sStartTime);
         validation.required("Shift end date", sStartDate);
         validation.required("Shift end time", sStartTime);
+        validation.required("Shift location", shiftLocation);
 
         int shiftType = Integer.parseInt(sShiftType);
         switch (shiftType) {
@@ -105,7 +111,7 @@ public class Shifts extends BaseController {
         // Convert shift start/end date time.
         Date start = new Date();
         Date end = new Date();
-        try {            
+        try {
             DateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm");
             start = df.parse(sStartDate + " " + sStartTime);
             end = df.parse(sEndDate + " " + sEndTime);
@@ -119,7 +125,8 @@ public class Shifts extends BaseController {
 
         // Build required shift info.
         Schedule schedule = Schedule.findById(scheduleId);
-        ShiftType type = ShiftType.findById(new Long(shiftType));
+        Location location = Location.findById(Long.valueOf(scheduleId));
+        ShiftType type = ShiftType.findById(Long.valueOf(shiftType));
         ShiftShift shiftshift = ShiftShift.findById(Long.valueOf(sWorkShift));
         WorkType workType = WorkType.findById(Long.valueOf(sWorkType));
         WorkSubtype workSubtype = WorkSubtype.findById(Long.valueOf(sWorkSubtype));
@@ -138,20 +145,20 @@ public class Shifts extends BaseController {
         }
 
         // Insert shift general info.
-        Shift shift = new Shift(start, end, schedule, type, shiftshift, status,
-                                workType, workSubtype, contact, comment);
+        Shift shift = new Shift(start, end, schedule, location, type, shiftshift,
+                                status, workType, workSubtype, contact, comment);
 
-        // Insert shift type specific info.
+        // Insert specific shift info.
         switch (shiftType) {
             case 1: // Postable/Open shift.
-                // TODO: Insert shift.
+                new OpenShift(shift, Integer.parseInt(numNeeded));
                 break;
              case 2: // Scheduled shift.
                 Member member = Member.findById(Long.valueOf(sMember));
                 new ScheduledShift(shift, member);
                 break;
             case 3: // Self-schedule shift.
-                try {            
+                try {
                     DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
                     Date signup = df.parse(signupDate);
                     new SelfScheduleShift(shift, signup, Integer.parseInt(ssNumNeeded));
@@ -212,5 +219,67 @@ public class Shifts extends BaseController {
         }
 
         renderJSON(new StatusMessage(StatusMessage.SUCCESS, "", ""));
+    }
+
+    public static void getCalendarViewShifts(int scheduleId, int locationId, int jobTitleId,
+                                             String dateStr, int viewByDays) {
+        // @debug.
+        System.out.println("Shifts.getCalendarViewShifts - start date: " + dateStr + ", days: " + viewByDays + ", job title id: " + jobTitleId);
+
+        // Convert start date.
+        Date startDate = new Date();
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+            startDate = sdf.parse(dateStr);
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        List<CalendarShift> calShifts = new ArrayList<CalendarShift>();
+
+        // Find all shifts that matched selected criterias.
+        List<Shift> shifts = Shift.findCalendarViewShifts(startDate, viewByDays, scheduleId, locationId);
+        //System.out.println("Shifts.getCalendarViewShifts - shifts found: " + shifts.size());
+        Iterator<Shift> it = shifts.iterator();
+        while (it.hasNext()) {
+            Shift shift = it.next();
+
+            // Copy info to be displayed.
+            CalendarShift cs = new CalendarShift();
+            cs.id = shift.id;
+            cs.type = shift.shiftType.id.intValue();
+            cs.start = shift.dateStart;
+            cs.end = shift.dateEnd;
+
+            // Get specific shift info.
+            switch (shift.shiftType.id.intValue()) {
+                case 1: // Postable/Open.
+                    cs.name = "Open Shift";
+                    cs.image = "@{'/public/images/o.png'}";
+                    break;
+                 case 2: // Scheduled.
+                    ScheduledShift ss = ScheduledShift.findByShiftId(shift.id);
+
+                    // Check user job title.
+                    //System.out.println("Shifts.getCalendarViewShifts - member's job title id: " + ss.member.jobTitleId);
+                    if (ss.member.jobTitleId != jobTitleId) {
+                        continue;
+                    }
+
+                    cs.name = ss.member.user.name;
+                    cs.image = "http://www.gravatar.com/avatar/" +
+                               ss.member.user.gravatarHash(ss.member.user.email) + "?s=22";
+                    break;
+                case 3: // Selft-schedule.
+                    cs.name = "SS Shift";
+                    cs.image = "";
+                    cs.color = "#FFFFE3";
+                    break;
+           }
+           calShifts.add(cs);
+        }
+
+        renderJSON(calShifts);
     }
 }

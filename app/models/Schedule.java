@@ -16,10 +16,10 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "schedule")
 public class Schedule extends Model {
-    
+
     @Required
     public String name;
-    
+
     public Timestamp dc;
 
     @ManyToOne(targetEntity = Account.class, fetch = FetchType.LAZY)

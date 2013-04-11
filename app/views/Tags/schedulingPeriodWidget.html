@@ -6,7 +6,7 @@
       spStartDate = new Date(e.date);
       spStartDate.setDate(spStartDate.getDate() + 1);
 
-      // Inform the subscriber a new date selected.  
+      // Inform the subscriber a new date selected.
       $.publish("/schedulingPeriod/startDate",  {startDate: spStartDate});
     });
   });

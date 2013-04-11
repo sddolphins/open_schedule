@@ -20,7 +20,7 @@ public class Locations extends BaseController {
 
     public static void create(int facId, String name) {
         Facility facility = Facility.findById(new Long(facId));
-        new Location(name, facility);        
+        new Location(name, facility);
     }
 
     public static void delete(int locationId) {

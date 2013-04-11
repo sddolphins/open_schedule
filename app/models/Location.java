@@ -18,10 +18,10 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "location")
 public class Location extends Model {
-    
+
     @Required
     public String name;
-    
+
     public Timestamp dc;
 
     @ManyToOne(targetEntity = Facility.class, fetch = FetchType.LAZY)
@@ -30,6 +30,9 @@ public class Location extends Model {
 
     @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
     public List<MemberLocation> members = null;
+
+    @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
+    public List<Shift> shifts = null;
 
     public Location(String name, Facility facility) {
         this.name = name;

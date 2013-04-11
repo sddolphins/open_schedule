@@ -57,7 +57,7 @@ public class Plans extends BaseController {
                 Billing freeBilling = Billing.findById(new Long(1));
                 account.plan = freePlan;
                 account.billing = freeBilling;
-                account.save();                
+                account.save();
                 renderJSON(new StatusMessage(StatusMessage.SUCCESS, "", ""));
             }
         }

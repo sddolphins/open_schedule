@@ -11,7 +11,7 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "billing_type")
 public class BillingType extends Model {
-    
+
     @Required
     public String description;
 

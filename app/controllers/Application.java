@@ -102,7 +102,7 @@ public class Application extends BaseController {
         catch (Exception e) {
             Logger.error(e, "Mail error");
         }
-        
+
         flash.error("Oops (the email cannot be sent)...");
         flash.put("email", user.email);
         signin();

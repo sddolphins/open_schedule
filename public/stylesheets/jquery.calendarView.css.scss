@@ -1,0 +1,75 @@
+/*
+jQuery.calendarView v.1.0
+Copyright (c) 2013 Minh Tran - sddolphins@gmail.com
+MIT License Applies
+*/
+
+/* Slider */
+.calendarview-slide-container {
+    overflow: auto;
+}
+
+/* Horizontal Header */
+.calendarview-hzheader-hour {
+    float: left;
+    text-align: center;
+    height: 30px;
+    border-right: 1px solid #d0d0d0;
+    line-height: 30px;
+    color: #777;
+    &.last {
+        border-right: none;
+    }
+}
+
+/* Grid */
+.calendarview-grid {
+    float: left;
+}
+
+.calendarview-grid-row-cell {
+    float: left;
+    &.last {
+        border-right: none;
+    }
+    height: 31px;
+    border-right: 1px solid #f0f0f0;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* Blocks */
+.calendarview-block-container {
+    height: 28px;
+    padding-top: 4px;
+}
+
+.calendarview-block {
+    position: relative;
+    height: 25px;
+    background-color: #E5ECF9;
+    border: 1px solid #c0c0c0;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+.calendarview-block-image {
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    padding: 2px 2px;
+}
+
+.calendarview-block-text {
+    position: absolute;
+    height: 12px;
+    font-size: 0.8em;
+    color: #999;
+    padding: 2px 3px;
+    margin-left: 26px;
+}
+
+/* Adjustments for jQuery UI Styling */
+.calendarview-block .ui-resizable-handle.ui-resizable-s {
+    bottom: 0;
+}

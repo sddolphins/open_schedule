@@ -17,7 +17,7 @@ public class Schedules extends BaseController {
 
         // Add default member.
         User user = connectedUser();
-        new Member(user, account, schedule);        
+        new Member(user, account, schedule);
     }
 
     public static void delete(int scheduleId) {

@@ -15,7 +15,7 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "billing")
 public class Billing extends Model {
-    
+
     @Required
     @Column(name = "holder_name")
     public String holderName;
@@ -34,7 +34,7 @@ public class Billing extends Model {
 
     @Required
     public String country;
-    
+
     public String state;
     public String zip;
     public Timestamp dc;

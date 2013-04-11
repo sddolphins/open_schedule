@@ -23,7 +23,7 @@ import play.db.jpa.Model;
                                                              "account_id",
                                                              "schedule_id"})})
 public class Member extends Model {
-    
+
     public String address;
     public String city;
     public String state;

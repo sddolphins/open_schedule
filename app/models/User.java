@@ -59,6 +59,11 @@ public class User extends Model {
         return email.equals(Play.configuration.getProperty("adminEmail", ""));
     }
 
+    public String gravatarHash() {
+        return Codec.hexMD5(email.toLowerCase().trim());
+    }
+
+    // Overload to be called from within controller.
     public static String gravatarHash(String gravatarId) {
         if (gravatarId != null)
             return Codec.hexMD5(gravatarId.toLowerCase().trim());

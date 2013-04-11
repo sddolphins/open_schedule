@@ -11,7 +11,7 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "credit_card_type")
 public class CreditCardType extends Model {
-    
+
     @Required
     public String description;
 

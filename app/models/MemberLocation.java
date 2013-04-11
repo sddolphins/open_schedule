@@ -16,7 +16,7 @@ import play.db.jpa.JPA;
 @Table(name = "member_location")
 @IdClass(MemberLocationPk.class)
 public class MemberLocation extends GenericModel {
-    
+
     @Id
     @Column(name = "member_id")
     public long memberId;

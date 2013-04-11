@@ -17,7 +17,7 @@ public class BaseController extends Controller {
     static void checkSecure() {
         Secure secure = getControllerAnnotation(Secure.class);
         if (secure != null) {
-            if (connectedUser() == null) {                
+            if (connectedUser() == null) {
                 flash.put("url", "GET".equals(request.method) ? request.url : "/");
                 Application.signin();
                 return;

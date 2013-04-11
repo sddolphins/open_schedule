@@ -11,12 +11,12 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "shift_request_status")
 public class ShiftRequestStatus extends Model {
-    
+
     @Required
     public String name;
-    
+
     public Timestamp dc;
-    
+
     public ShiftRequestStatus(String name) {
         this.name = name;
         this.dc = null;

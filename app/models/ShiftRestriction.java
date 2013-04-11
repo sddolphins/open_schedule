@@ -15,22 +15,22 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "shift_restriction")
 public class ShiftRestriction extends Model {
-    
+
     public boolean active;
     public Timestamp dc;
 
     @ManyToOne(targetEntity = Shift.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "shift_id")
     public Shift shift = null;
-    
+
     @ManyToOne(targetEntity = Location.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")
     public Location location = null;
-    
+
     @ManyToOne(targetEntity = JobTitle.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "job_title_id")
     public JobTitle jobTitle = null;
-    
+
     public ShiftRestriction(Shift shift, Location location, JobTitle jobTitle,
                             boolean active) {
         this.shift = shift;

@@ -18,57 +18,57 @@
   });
 </script>
 
-  <div class="box-header">
-    <h2><i class="icon-check"></i><span class="break"></span>Display Options</h2>
-    <div class="box-icon">
-      <a href="#" class="btn-setting"><i class="icon-wrench"></i></a>
-      <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
-      <a href="#" class="btn-close"><i class="icon-remove"></i></a>
-    </div>
+<div class="box-header">
+  <h2><i class="icon-check"></i><span class="break"></span>Display Options</h2>
+  <div class="box-icon">
+    <a href="#" class="btn-setting"><i class="icon-wrench"></i></a>
+    <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
+    <a href="#" class="btn-close"><i class="icon-remove"></i></a>
   </div>
-  <div class="box-content widget_content" id="displayOptions">
-    <div class="row-fluid">
-      <div class="span6">
-        <label>Current Location:</label>
-      </div>
-      <div class="span6">
-        <select id="location" >
+</div>
+<div class="box-content widget_content" id="displayOptions">
+  <div class="row-fluid">
+    <div class="span6">
+      <label>Current Location:</label>
+    </div>
+    <div class="span6">
+      <select id="location" >
 %{
-          facility = "";
-          newGroup = null;
-          for (loc in _locations) {
-            if (facility != loc.facility.name) {
-              if (newGroup) {
+        facility = "";
+        newGroup = null;
+        for (loc in _locations) {
+          if (facility != loc.facility.name) {
+            if (newGroup) {
 }%
-                </optgroup>
-                <optgroup label="${loc.facility.name}">
+              </optgroup>
+              <optgroup label="${loc.facility.name}">
 %{
-              }
-              else {
-}%
-                <optgroup label="${loc.facility.name}">
-%{              
-              }
-              facility = loc.facility.name;
-              newGroup = true;
             }
+            else {
 }%
-            <option value="${loc.id}"> ${loc.name} </option>
+              <optgroup label="${loc.facility.name}">
 %{
+            }
+            facility = loc.facility.name;
+            newGroup = true;
           }
 }%
-          </optgroup>
-        </select>
-      </div>
-    </div>
-    <div class="row-fluid">
-      <div class="span12">
-        <input type="radio" class="currentView" value="1" name="currentView" id="calendarView" data-label="Calendar View" data-customclass="margin-right" checked/>
-      </div>
-    </div>
-    <div class="row-fluid">
-      <div class="span12">
-        <input type="radio" class="currentView" value="2" name="currentView" id="matrixView" data-label="Matrix View" data-customclass="margin-right"/>
-      </div>
+          <option value="${loc.id}"> ${loc.name} </option>
+%{
+        }
+}%
+        </optgroup>
+      </select>
     </div>
   </div>
+  <div class="row-fluid">
+    <div class="span12">
+      <input type="radio" class="currentView" value="1" name="currentView" id="calendarView" data-label="Calendar View" data-customclass="margin-right" checked/>
+    </div>
+  </div>
+  <div class="row-fluid">
+    <div class="span12">
+      <input type="radio" class="currentView" value="2" name="currentView" id="matrixView" data-label="Matrix View" data-customclass="margin-right"/>
+    </div>
+  </div>
+</div>

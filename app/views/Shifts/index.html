@@ -1,21 +1,50 @@
 #{extends 'main.html' /}
 #{set title:'Shifts' /}
 #{set 'moreStyles'}
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/jquery-ui-1.10.2.custom.min.css'}">
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/box.css.scss'}">
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/datepicker.css'}">
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/prettyCheckable.css'}">
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/shift.css.scss'}">
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/widget.css.scss'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/jquery.calendarView.css.scss'}">
 #{/set}
 
 <div id="shift_page">
 
-  <div class="ui-layout-center">
-    #{viewHeader /}
-  </div>
-
   <div class="ui-layout-west west_pane">
     #{widget locations:locations /}
+  </div>
+
+  <div class="ui-layout-center">
+    #{viewHeader /}
+
+    <div class="box">
+      <div class="calendar-view-content">
+        <div class="row-fluid">
+          <div class="span12">
+            <div id="calViewHeader"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    #{list items:jobTitles, as:'jt'}
+    <div class="box">
+      <div class="calendar-view-header">
+        <h2><a id="jt-btn-minimize_${jt.id}" href="#" onclick="displayShifts(${jt.id})"><i class="icon-chevron-down"></i></a>${jt.name}</h2>
+        <!-- TODO: add reload icon for each job title -->
+      </div>
+      <div class="calendar-view-content" style="display:none;">
+        <input type="hidden" id="reload_jt_${jt.id}" value="true" />
+        <div class="row-fluid">
+          <div class="span12">
+            <div id="jt_content_${jt.id}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    #{/list}
   </div>
 
 </div>
@@ -34,29 +63,70 @@
   </div>
 </div>
 
+<!-- debug, remove when done -->
+<div id="eventMessage"></div>
+
 #{set 'moreScripts'}
 <script src="@{'/public/javascripts/jquery.layout-latest.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/jquery-ui-1.10.2.custom.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/bootstrap-datepicker.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/prettyCheckable.js'}" type="text/javascript" charset="${_response_encoding}"></script>
-<script src="@{'/public/javascripts/moment.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/jquery.ba-tinypubsub.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/date.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/jquery.calendar-1-day-view-header.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/jquery.calendar-1-day-view.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 
 <script type="text/javascript">
+  var calData = [];
+  var startDate = Date.today();
+  var viewByDays = "1";
+  var defaultLocationId;
+  var jobTitleIdArray = new Array();
+  var innerWidth;
+
   $(function() {
+    // Initialize global variables.
+    defaultLocationId = $('#location').val();
+    console.log("current location: " + defaultLocationId);
+
+    // Populate shifts.
+    calData = [
+      {id: 1, type:"", name: "Minh Tran", image: "http://www.gravatar.com/avatar/0516c38634c8b63cf36d2c248f6b462d?s=22", start: new Date(2013,03,08,07,00), end: new Date(2013,03,08,19,00)},
+      {id: 2, type:"", name: "Leslie Tran", image: "http://www.gravatar.com/avatar/?s=22", start: new Date(2013,03,08,19,00), end: new Date(2013,03,09,07,00)},
+      {id: 3, type:"", name: "Open Shift", image: "@{'/public/images/o.png'}", start: new Date(2013,03,08,19,00), end: new Date(2013,03,09,03,00), color: "#FFFFE3"}
+    ];
+
     // Initialize scheduling period start date.
-    var now = new moment();
-    $('#lbl_spStartDate').text(now.format('dddd, MMMM Do YYYY'));
+    var today = Date.today();
+    $('#lbl_spStartDate').text(today.toString('D'));
 
     // Page layout settings.
-    $('#shift_page').layout({
+    var $Pane;
+    var innerLayout = $('#shift_page').layout({
       west__size: 250,
-      applyDefaultStyles: true
+      applyDefaultStyles: true,
+
+      center__onresize: function (pane, $Pane, paneState) {
+        innerWidth  = $Pane.innerWidth();
+        renderHeader(innerWidth);
+        for (var i = 0; i < jobTitleIdArray.length; i++) {
+          getCalendarViewShifts(jobTitleIdArray[i]);
+        };
+      }
     });
+
+    // Initialize calendar width.
+    $Pane = innerLayout.panes.center;
+    innerWidth = $Pane.innerWidth();
+
+    // Render calendar view header, the content is rendered later per job title.
+    renderHeader(innerWidth);
 
     // Subscribe to location change event.
     $.subscribe("/displayOptions/location", function(e, data) {
       if (data) {
         alert("location: " + data.location);
+        defaultLocationId = data.location;
       }
     });
 
@@ -70,15 +140,18 @@
     // Subscribe to scheduling period start date change event.
     $.subscribe("/schedulingPeriod/startDate", function(e, data) {
       if (data) {
-        var d = moment(data.startDate);
-        $('#lbl_spStartDate').text(d.format('dddd, MMMM Do YYYY'));
+        startDate = new Date(data.startDate);
+        $('#lbl_spStartDate').text(startDate.toString('D'));
       }
     });
 
     // Subscribe to view by change event.
-    $.subscribe("/viewHeader/viewBy", function(e, data) {
+    $.subscribe("/viewHeader/viewByDays", function(e, data) {
       if (data) {
-        alert("view by: " + data.viewBy);
+        if (viewByDays != data.viewByDays) {
+          viewByDays = data.viewByDays;
+          alert("change view to: " + viewByDays + ", day(s)");
+        }
       }
     });
 
@@ -88,7 +161,102 @@
         alert("date change: " + data.dateChange);
       }
     });
-
   });
+
+  function displayShifts(jtId) {
+    // @debug.
+    console.log("job title id: " + jtId);
+
+    var $target = $('a#jt-btn-minimize_'+jtId).parent().parent().next('.calendar-view-content');
+    if ($target.is(':visible')) {
+      $('i', $('a#jt-btn-minimize_'+jtId)).removeClass('icon-chevron-up').addClass('icon-chevron-down');
+    }
+    else {
+      $('i', $('a#jt-btn-minimize_'+jtId)).removeClass('icon-chevron-down').addClass('icon-chevron-up');
+
+      // Save job title id to reload during resize.
+      jobTitleIdArray.push(jtId);
+
+      // Check to see if we need to reload the shifts.
+      var reload = $('#reload_jt_'+jtId).val();
+      if (reload == "true") {
+        // @debug.
+        console.log("reload content for job title id: " + jtId);
+
+        // Get all shifts that matched job title and location.
+        getCalendarViewShifts(jtId);
+      }
+    }
+    $target.slideToggle();
+  }
+
+  function getCalendarViewShifts(jtId) {
+    // @debug.
+    console.log("job title id: " + jtId);
+    console.log("start date: " + startDate.toString() + ", days: " + viewByDays);
+
+    // Get shifts.
+    var getAction = #{jsAction @Shifts.getCalendarViewShifts(':schedule_id', ':location_id',
+                                                             ':job_title_id', ':start_date',
+                                                             ':view_by_days') /};
+    $.ajax({
+      type: 'GET',
+      url: getAction({schedule_id: ${schedule.id},
+                      location_id: defaultLocationId,
+                      job_title_id: jtId,
+                      start_date: startDate.toString("MM/dd/yyyy HH:mm"),
+                      view_by_days: viewByDays}),
+      success: function(data) {
+        // @debug.
+        console.log(data);
+
+        // Render shifts.
+        calData = data;
+        renderShifts(jtId, calData, innerWidth);
+
+        // Prevent reloading again when minimize.
+        $('#reload_jt_'+jtId).val("false");
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        bootbox.alert("Error gettting shifts data: " + xhr.responseText);
+      }
+    });
+  }
+
+  function renderHeader(calWidth) {
+    $('#calViewHeader').empty();
+    $("#calViewHeader").calendarViewHeader({
+      cellWidth: (calWidth-16) / 25,
+      slideWidth: (calWidth-16)
+    });
+  }
+
+  function renderShifts(jtId, data, calWidth) {
+    // Render calendar view content.
+    $('#jt_content_'+jtId).empty();
+    $("#jt_content_"+jtId).calendarView({
+      data: data,
+      cellWidth: (calWidth-16) / 25,
+      slideWidth: (calWidth-16),
+      behavior: {
+        onClick: function(data) {
+          var msg = "You clicked on shift: { start: " + data.start.toString("MM/d/yyyy hh:mm") + ", end: " + data.end.toString("MM/d/yyyy hh:mm") + " }";
+          $("#eventMessage").text(msg);
+        },
+        onDblClick: function(data) {
+          var msg = "You double-clicked on shift: { start: " + data.start.toString("MM/d/yyyy hh:mm") + ", end: " + data.end.toString("MM/d/yyyy hh:mm") + " }";
+          $("#eventMessage").text(msg);
+        },
+        onResize: function(data) {
+          var msg = "You resized shift: { start: " + data.start.toString("MM/d/yyyy hh:mm") + ", end: " + data.end.toString("MM/d/yyyy hh:mm") + " }";
+          $("#eventMessage").text(msg);
+        },
+        onDrag: function(data) {
+          var msg = "You dragged shift: { start: " + data.start.toString("MM/d/yyyy hh:mm") + ", end: " + data.end.toString("MM/d/yyyy hh:mm") + " }";
+          $("#eventMessage").text(msg);
+        }
+      }
+    });
+  }
 </script>
 #{/set}

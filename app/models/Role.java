@@ -13,10 +13,10 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "role")
 public class Role extends Model {
-    
+
     @Required
     public String description;
-    
+
     public Timestamp dc;
 
     public Role(String description) {

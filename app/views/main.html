@@ -11,7 +11,7 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/custom.css.scss'}">
     #{get 'moreStyles' /}
-    
+
     <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
     <script src="@{'/public/javascripts/jquery-1.9.1.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
     <script src="@{'/public/javascripts/bootstrap.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
@@ -23,7 +23,7 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
   </head>
-    
+
   <body>
     #{header user:connected, schedule:schedule /}
 
@@ -44,6 +44,6 @@
       #{doLayout /}
       #{footer /}
     </div>
-    
+
   </body>
 </html>

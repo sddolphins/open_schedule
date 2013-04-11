@@ -22,9 +22,9 @@
 <div class="alert alert-info">
   <div class="row-fluid">
     <div class="span9">
-      <p>Accounts allow you to organize schedules.  Every schedule belong to an account.  
-      You can create as many accounts as you'd like - but each must be paid for 
-      and/or managed separately.  An account has one owner and can have additional 
+      <p>Accounts allow you to organize schedules.  Every schedule belong to an account.
+      You can create as many accounts as you'd like - but each must be paid for
+      and/or managed separately.  An account has one owner and can have additional
       people as members.</p>
     </div>
     <div class="span3">
@@ -34,7 +34,7 @@
 </div>
 
 <div class="accounts_page">
-  
+
   <h4 class="muted">Accounts I Own</h4>
 
   #{list items:accounts, as:'account'}
@@ -50,7 +50,7 @@
     </div>
   </div>
 
-  <div class="subheader">  
+  <div class="subheader">
     <div class="plan_description">
       <div class="name">${account.plan.description}</div>
       <div class="descriptor">account plan</div>
@@ -90,8 +90,8 @@
 <script type="text/javascript">
   $(function() {
     $('#create_account').on('click', function(e) {
-      bootbox.prompt("Account Name", "Cancel", "Create Account", function(result) {                
-        if (result != null) {                                             
+      bootbox.prompt("Account Name", "Cancel", "Create Account", function(result) {
+        if (result != null) {
           var saveAction = #{jsAction @Accounts.create(':name') /};
           $.ajax({
             type: 'POST',
@@ -111,12 +111,12 @@
         }
       });
     });
-    
+
     $('#create_schedule').on('click', function(e) {
       var accountId = $('#account_id').val();
       //console.log(accountId);
-      bootbox.prompt("Schedule Name", "Cancel", "Create Schedule", function(result) {                
-        if (result != null) {                                             
+      bootbox.prompt("Schedule Name", "Cancel", "Create Schedule", function(result) {
+        if (result != null) {
           var saveAction = #{jsAction @Schedules.create(':account_id', ':name') /};
           $.ajax({
             type: 'POST',
@@ -136,13 +136,13 @@
         }
       });
     });
-    
+
     return false;
   });
 
   function deleteSchedule(scheduleId, scheduleName) {
     bootbox.confirm("You are about to permanently remove the schedule: " + scheduleName + ".  Are you sure you want to do this?", function(result) {
-      if (result) {                                             
+      if (result) {
         var deleteAction = #{jsAction @Schedules.delete(':schedule_id') /};
         $.ajax({
           type: 'DELETE',

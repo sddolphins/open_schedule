@@ -162,7 +162,7 @@ public class Members extends BaseController {
         member.country = country;
         member.phone = phone;
         if (hireDate != null && hireDate.trim().length() > 0) {
-            try {                
+            try {
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
                 member.hireDate = sdf.parse(hireDate);
             }
@@ -193,7 +193,7 @@ public class Members extends BaseController {
         // Insert new locations.
         for (int i = 0; i < location.length; i++) {
             int locationId = Integer.parseInt(location[i]);
-            //System.out.println("location id: " + locationId);            
+            //System.out.println("location id: " + locationId);
             new MemberLocation(member.id.longValue(), locationId);
         }
 
@@ -202,7 +202,7 @@ public class Members extends BaseController {
 
     public static void delete(int memberId) {
         Member member = Member.findById(new Long(memberId));
-        
+
         // Remove existing locations.
         List<MemberLocation> memberLocations = member.locations;
         if (memberLocations != null && memberLocations.size() > 0) {

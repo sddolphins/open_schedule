@@ -12,7 +12,7 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "plan")
 public class Plan extends Model {
-    
+
     @Required
     public String description;
 

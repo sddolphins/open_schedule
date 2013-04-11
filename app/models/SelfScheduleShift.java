@@ -18,20 +18,20 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "self_schedule_shift")
 public class SelfScheduleShift extends Model {
-    
+
     @Column(name = "signup_date_start")
     public Date signupDateStart;
 
-    @Required    
+    @Required
     @Column(name = "num_needed")
     public int numNeeded;
-    
+
     @Column(name = "num_awarded")
     public int numAwarded;
-    
+
     @Column(name = "num_filled")
     public int numFilled;
-    
+
     public Timestamp dc;
 
     @OneToOne(targetEntity = Shift.class, fetch = FetchType.LAZY)

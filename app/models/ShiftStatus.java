@@ -12,16 +12,16 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "shift_status")
 public class ShiftStatus extends Model {
-    
+
     @Required
     public String name;
-    
+
     @Required
     @Column(name = "sort_order")
     public int sortOrder;
-    
+
     public Timestamp dc;
-    
+
     public ShiftStatus(String name, int sortOrder) {
         this.name = name;
         this.sortOrder = sortOrder;

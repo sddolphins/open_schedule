@@ -16,8 +16,8 @@ import play.db.jpa.Model;
 @Entity
 @Table(name = "self_schedule_request")
 public class SelfScheduleRequest extends Model {
-    
-    @Required    
+
+    @Required
     @Column(name = "date_requested")
     public Date dateRequested;
 
@@ -27,8 +27,8 @@ public class SelfScheduleRequest extends Model {
     public String comment;
 
     @Column(name = "manager_comment")
-    public String managerComment;    
-    
+    public String managerComment;
+
     public Timestamp dc;
 
     @ManyToOne(targetEntity = SelfScheduleShift.class, fetch = FetchType.LAZY)
@@ -38,11 +38,11 @@ public class SelfScheduleRequest extends Model {
     @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     public Member member = null;
-    
+
     @ManyToOne(targetEntity = ShiftRequestStatus.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "request_status_id")
     public ShiftRequestStatus status = null;
-    
+
     public SelfScheduleRequest(SelfScheduleShift sss, Member member,
                                String comment, String managerComment) {
         this.sss = sss;

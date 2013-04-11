@@ -42,7 +42,7 @@
   <div class="row-fluid">
     <div class="span2" style="text-align:center">
       <br />
-      <img src="http://www.gravatar.com/avatar/${models.User.gravatarHash(member.user.email).raw()}?s=120"/>
+      <img src="http://www.gravatar.com/avatar/${member.user.gravatarHash().raw()}?s=120"/>
       <br />
       <a href="http://gravatar.com/emails">Change</a>
     </div>
@@ -188,7 +188,7 @@
                   else {
 }%
                     <optgroup label="${loc.facility.name}">
-%{              
+%{
                   }
                   facility = loc.facility.name;
                   newGroup = true;
@@ -296,7 +296,7 @@
             for (var i in msgs) {
               console.log(msgs[i]);
               $('#update_error_message').append('<li>' + msgs[i] + '</li>');
-            }            
+            }
             $('#update_error').show();
           }
           else {
@@ -336,7 +336,7 @@
       $('#member_profile select').addClass('uneditable-input');
       $('#member_profile input').attr('disabled', 'disabled');
       $('#member_profile select').attr('disabled', 'disabled');
-      
+
       $("#location").select2('disable');
     }
   }

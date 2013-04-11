@@ -75,8 +75,8 @@
 #{set 'moreScripts'}
 <script type="text/javascript">
   function createLocation(facId) {
-    bootbox.prompt("Location Name", "Cancel", "Create Location", function(result) {                
-      if (result != null) {                                             
+    bootbox.prompt("Location Name", "Cancel", "Create Location", function(result) {
+      if (result != null) {
         var saveAction = #{jsAction @Locations.create(':facility_id', ':name') /};
         $.ajax({
           type: 'POST',
@@ -99,7 +99,7 @@
 
   function deleteLocation(locId, locName) {
     bootbox.confirm("You are about to permanently remove location " + locName + ".  Are you sure you want to do this?", function(result) {
-      if (result) {                                             
+      if (result) {
         var deleteAction = #{jsAction @Locations.delete(':location_id') /};
         $.ajax({
           type: 'DELETE',
@@ -122,7 +122,7 @@
 
   function deleteFacility(facilityId, facilityName) {
     bootbox.confirm("You are about to permanently remove facility " + facilityName + " and all its locations.  Are you sure you want to do this?", function(result) {
-      if (result) {                                             
+      if (result) {
         var deleteAction = #{jsAction @Facilities.delete(':facility_id') /};
         $.ajax({
           type: 'DELETE',

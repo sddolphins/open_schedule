@@ -72,8 +72,8 @@
   $(function() {
     $('#create_organization').on('click', function(e) {
       var accountId = $('#account_id').val();
-      bootbox.prompt("Organization Name", "Cancel", "Create Organization", function(result) {                
-        if (result != null) {                                             
+      bootbox.prompt("Organization Name", "Cancel", "Create Organization", function(result) {
+        if (result != null) {
           var saveAction = #{jsAction @Organizations.create(':account_id', ':name') /};
           $.ajax({
             type: 'POST',
@@ -93,13 +93,13 @@
         }
       });
     });
-    
+
     return false;
   });
 
   function createFacility(orgId) {
-    bootbox.prompt("Facility Name", "Cancel", "Create Facility", function(result) {                
-      if (result != null) {                                             
+    bootbox.prompt("Facility Name", "Cancel", "Create Facility", function(result) {
+      if (result != null) {
         var saveAction = #{jsAction @Facilities.create(':organization_id', ':name') /};
         $.ajax({
           type: 'POST',
@@ -122,7 +122,7 @@
 
   function deleteOrganization(orgId, orgName) {
     bootbox.confirm("You are about to permanently remove organization " + orgName + " and all its facilities.  Are you sure you want to do this?", function(result) {
-      if (result) {                                             
+      if (result) {
         var deleteAction = #{jsAction @Organizations.delete(':organization_id') /};
         $.ajax({
           type: 'DELETE',
@@ -145,7 +145,7 @@
 
   function deleteFacility(facilityId, facilityName) {
     bootbox.confirm("You are about to permanently remove facility " + facilityName + " and all its locations.  Are you sure you want to do this?", function(result) {
-      if (result) {                                             
+      if (result) {
         var deleteAction = #{jsAction @Facilities.delete(':facility_id') /};
         $.ajax({
           type: 'DELETE',

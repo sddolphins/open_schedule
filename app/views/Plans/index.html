@@ -91,7 +91,7 @@
               #{if plan.id == 1}
               You are changing to the <strong>${plan.description}</strong> plan.
               #{/if}
-            
+
               #{else}
               You are upgrading to the <strong>${plan.description}</strong> plan.&nbsp;&nbsp;Choose one of the following billing options:
               <div>
@@ -174,7 +174,7 @@
                   </div>
                 </div>
               </div>
-              #{/else}            
+              #{/else}
 
               <div class="row-fluid">
                 <div class="span8">
@@ -222,7 +222,7 @@
           var error = '<ul class="alert alert-error" style="margin-left: -3px;">';
           for (var i in msgs) {
             error += '<li style="margin-left: 13px;">' + msgs[i] + '</li>';
-          }            
+          }
           error += '</ul>';
           bootbox.alert(data.message + "<br /><br />" + error);
         }

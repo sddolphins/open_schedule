@@ -2,18 +2,19 @@ package models;
 
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import play.data.validation.Required;
 import play.db.jpa.Model;
 
 @Entity
-@Table(name = "scheduled_shift")
-public class ScheduledShift extends Model {
+@Table(name = "open_shift")
+public class OpenShift extends Model {
 
     public Timestamp dc;
 
@@ -21,18 +22,18 @@ public class ScheduledShift extends Model {
     @JoinColumn(name = "shift_id")
     public Shift shift = null;
 
-    @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    public Member member = null;
+    @Required
+    @Column(name = "num_needed")
+    public int numNeeded;
 
-    public ScheduledShift(Shift shift, Member member) {
+    public OpenShift(Shift shift, int numNeeded) {
         this.shift = shift;
-        this.member = member;
+        this.numNeeded = numNeeded;
         this.dc = null;
         save();
     }
 
-    public static ScheduledShift findByShiftId(Long shiftId) {
-        return ScheduledShift.find("shift_id", shiftId).first();
+    public static OpenShift findByShiftId(Long shiftId) {
+        return OpenShift.find("shift_id", shiftId).first();
     }
 }

@@ -130,7 +130,7 @@
 
   function deleteMember(memberId, memberName, scheduleName) {
     bootbox.confirm("You are about to remove " + memberName + " from accessing " + scheduleName + ".  Are you sure you want to do this?", function(result) {
-      if (result) {                                             
+      if (result) {
         var deleteAction = #{jsAction @Members.delete(':member_id') /};
         $.ajax({
           type: 'DELETE',

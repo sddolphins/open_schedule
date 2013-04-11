@@ -1,8 +1,8 @@
 <script type="text/javascript">
   $(function() {
     // Inform the subscriber new view by selected.
-    $('#viewBy').change(function() {
-      $.publish("/viewHeader/viewBy",  {viewBy: $(this).val()});
+    $('#viewByDays').change(function() {
+      $.publish("/viewHeader/viewByDays",  {viewByDays: $(this).val()});
     });
 
     // Inform the subscriber prev or next button is clicked.
@@ -23,7 +23,7 @@
             <label>View By:</label>
           </div>
           <div class="span7 pull-left">
-            <select id="viewBy">
+            <select id="viewByDays">
               <option value="1"> One Day </option>
               <option value="3"> Three Days </option>
               <option value="14"> Two Weeks </option>

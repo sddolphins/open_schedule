@@ -39,7 +39,7 @@
       &nbsp;&nbsp;
     </div>
   </div>
-  
+
   <ul class="rows">
     #{list items:jobTitles, as:'jt'}
     <li>
@@ -64,8 +64,8 @@
   $(function() {
     $('#create_job_title').on('click', function(e) {
       var accountId = $('#account_id').val();
-      bootbox.prompt("Job Title Description", "Cancel", "Create Job Title", function(result) {                
-        if (result != null) {                                             
+      bootbox.prompt("Job Title Description", "Cancel", "Create Job Title", function(result) {
+        if (result != null) {
           var saveAction = #{jsAction @JobTitles.create(':account_id', ':name') /};
           $.ajax({
             type: 'POST',
@@ -85,13 +85,13 @@
         }
       });
     });
-    
+
     return false;
   });
 
   function deleteJobTitle(jtId, jtName) {
     bootbox.confirm("You are about to permanently remove job title " + jtName + ".  Are you sure you want to do this?", function(result) {
-      if (result) {                                             
+      if (result) {
         var deleteAction = #{jsAction @JobTitles.delete(':job_title_id') /};
         $.ajax({
           type: 'DELETE',
