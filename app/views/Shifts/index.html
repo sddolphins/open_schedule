@@ -4,10 +4,12 @@
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/jquery-ui-1.10.2.custom.min.css'}">
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/box.css.scss'}">
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/datepicker.css'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/bootstrap-timepicker.min.css'}">
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/prettyCheckable.css'}">
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/shift.css.scss'}">
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/widget.css.scss'}">
   <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/jquery.calendarView.css.scss'}">
+  <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/createShift.css.scss'}">
 #{/set}
 
 <div id="shift_page">
@@ -17,7 +19,7 @@
   </div>
 
   <div class="ui-layout-center">
-    #{viewHeader /}
+    #{calViewHeader /}
 
     <div class="box">
       <div class="calendar-view-content">
@@ -49,6 +51,8 @@
 
 </div>
 
+<div class="modal hide fade" id="edit_shift_dlg"></div>
+
 <div class="modal hide fade" id="myModal">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">×</button>
@@ -67,9 +71,11 @@
 <div id="eventMessage"></div>
 
 #{set 'moreScripts'}
+<link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
 <script src="@{'/public/javascripts/jquery.layout-latest.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/jquery-ui-1.10.2.custom.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/bootstrap-datepicker.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/bootstrap-timepicker.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/prettyCheckable.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/jquery.ba-tinypubsub.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/date.js'}" type="text/javascript" charset="${_response_encoding}"></script>
@@ -83,18 +89,12 @@
   var defaultLocationId;
   var jobTitleIdArray = new Array();
   var innerWidth;
+  var i;
 
   $(function() {
-    // Initialize global variables.
+    // Initialize default global variables.
     defaultLocationId = $('#location').val();
-    console.log("current location: " + defaultLocationId);
-
-    // Populate shifts.
-    calData = [
-      {id: 1, type:"", name: "Minh Tran", image: "http://www.gravatar.com/avatar/0516c38634c8b63cf36d2c248f6b462d?s=22", start: new Date(2013,03,08,07,00), end: new Date(2013,03,08,19,00)},
-      {id: 2, type:"", name: "Leslie Tran", image: "http://www.gravatar.com/avatar/?s=22", start: new Date(2013,03,08,19,00), end: new Date(2013,03,09,07,00)},
-      {id: 3, type:"", name: "Open Shift", image: "@{'/public/images/o.png'}", start: new Date(2013,03,08,19,00), end: new Date(2013,03,09,03,00), color: "#FFFFE3"}
-    ];
+    //console.log("current location: " + defaultLocationId);
 
     // Initialize scheduling period start date.
     var today = Date.today();
@@ -109,7 +109,7 @@
       center__onresize: function (pane, $Pane, paneState) {
         innerWidth  = $Pane.innerWidth();
         renderHeader(innerWidth);
-        for (var i = 0; i < jobTitleIdArray.length; i++) {
+        for (i = 0; i < jobTitleIdArray.length; i++) {
           getCalendarViewShifts(jobTitleIdArray[i]);
         };
       }
@@ -122,31 +122,31 @@
     // Render calendar view header, the content is rendered later per job title.
     renderHeader(innerWidth);
 
-    // Subscribe to location change event.
+    // Location change event handler.
     $.subscribe("/displayOptions/location", function(e, data) {
       if (data) {
-        alert("location: " + data.location);
         defaultLocationId = data.location;
+        updateCalendarView();
       }
     });
 
-    // Subscribe to current view change event.
+    // Current view change event handler.
     $.subscribe("/displayOptions/view", function(e, data) {
       if (data) {
         alert("view: " + data.view);
       }
     });
 
-    // Subscribe to scheduling period start date change event.
+    // Scheduling period start date change event handler.
     $.subscribe("/schedulingPeriod/startDate", function(e, data) {
-      if (data) {
-        startDate = new Date(data.startDate);
-        $('#lbl_spStartDate').text(startDate.toString('D'));
+      if (data && Date.equals(startDate, data.startDate) == false) {
+        startDate = data.startDate;
+        updateCalendarView();
       }
     });
 
-    // Subscribe to view by change event.
-    $.subscribe("/viewHeader/viewByDays", function(e, data) {
+    // View-by change event handler.
+    $.subscribe("/calViewHeader/viewByDays", function(e, data) {
       if (data) {
         if (viewByDays != data.viewByDays) {
           viewByDays = data.viewByDays;
@@ -155,17 +155,23 @@
       }
     });
 
-    // Subscribe to date change event.
-    $.subscribe("/viewHeader/dateChange", function(e, data) {
+    // Date change event handler.
+    $.subscribe("/calViewHeader/dateChange", function(e, data) {
       if (data) {
-        alert("date change: " + data.dateChange);
+        if (data.dateChange === "prev") {
+          startDate.add(-1).days();
+        }
+        else {
+          startDate.add(1).days();
+        }
+        updateCalendarView();
       }
     });
   });
 
   function displayShifts(jtId) {
     // @debug.
-    console.log("job title id: " + jtId);
+    //console.log("job title id: " + jtId);
 
     var $target = $('a#jt-btn-minimize_'+jtId).parent().parent().next('.calendar-view-content');
     if ($target.is(':visible')) {
@@ -181,7 +187,7 @@
       var reload = $('#reload_jt_'+jtId).val();
       if (reload == "true") {
         // @debug.
-        console.log("reload content for job title id: " + jtId);
+        //console.log("reload content for job title id: " + jtId);
 
         // Get all shifts that matched job title and location.
         getCalendarViewShifts(jtId);
@@ -190,10 +196,20 @@
     $target.slideToggle();
   }
 
+  function updateCalendarView() {
+    // Update display start date.
+    $('#lbl_spStartDate').text(startDate.toString('D'));
+
+    // Reload calendar view.
+    for (i = 0; i < jobTitleIdArray.length; i++) {
+      getCalendarViewShifts(jobTitleIdArray[i]);
+    };
+  }
+
   function getCalendarViewShifts(jtId) {
     // @debug.
-    console.log("job title id: " + jtId);
-    console.log("start date: " + startDate.toString() + ", days: " + viewByDays);
+    //console.log("job title id: " + jtId);
+    //console.log("start date: " + startDate.toString() + ", days: " + viewByDays);
 
     // Get shifts.
     var getAction = #{jsAction @Shifts.getCalendarViewShifts(':schedule_id', ':location_id',
@@ -208,13 +224,13 @@
                       view_by_days: viewByDays}),
       success: function(data) {
         // @debug.
-        console.log(data);
+        //console.log(data);
 
         // Render shifts.
         calData = data;
         renderShifts(jtId, calData, innerWidth);
 
-        // Prevent reloading again when minimize.
+        // Prevent from loading again when minimize.
         $('#reload_jt_'+jtId).val("false");
       },
       error: function(xhr, ajaxOptions, thrownError) {
@@ -226,7 +242,7 @@
   function renderHeader(calWidth) {
     $('#calViewHeader').empty();
     $("#calViewHeader").calendarViewHeader({
-      cellWidth: (calWidth-16) / 25,
+      cellWidth: (calWidth-16) / 37,
       slideWidth: (calWidth-16)
     });
   }
@@ -236,25 +252,59 @@
     $('#jt_content_'+jtId).empty();
     $("#jt_content_"+jtId).calendarView({
       data: data,
-      cellWidth: (calWidth-16) / 25,
+      cellWidth: (calWidth-16) / 37,
       slideWidth: (calWidth-16),
       behavior: {
         onClick: function(data) {
-          var msg = "You clicked on shift: { start: " + data.start.toString("MM/d/yyyy hh:mm") + ", end: " + data.end.toString("MM/d/yyyy hh:mm") + " }";
-          $("#eventMessage").text(msg);
+          //var msg = "You clicked on shift: { start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
+          //$("#eventMessage").text(msg);
         },
         onDblClick: function(data) {
-          var msg = "You double-clicked on shift: { start: " + data.start.toString("MM/d/yyyy hh:mm") + ", end: " + data.end.toString("MM/d/yyyy hh:mm") + " }";
+          var msg = "You double-clicked on shift: { start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
           $("#eventMessage").text(msg);
+          editShift(data.id);
         },
         onResize: function(data) {
-          var msg = "You resized shift: { start: " + data.start.toString("MM/d/yyyy hh:mm") + ", end: " + data.end.toString("MM/d/yyyy hh:mm") + " }";
+          var msg = "You resized shift: { id: " + data.id + ", start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
           $("#eventMessage").text(msg);
+          updateShiftDuration(data.id, data.start.toString("MM/d/yyyy HH:mm"), data.end.toString("MM/d/yyyy HH:mm"));
         },
         onDrag: function(data) {
-          var msg = "You dragged shift: { start: " + data.start.toString("MM/d/yyyy hh:mm") + ", end: " + data.end.toString("MM/d/yyyy hh:mm") + " }";
+          var msg = "You dragged shift: { id: " + data.id + ", start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
           $("#eventMessage").text(msg);
+          updateShiftDuration(data.id, data.start.toString("MM/d/yyyy HH:mm"), data.end.toString("MM/d/yyyy HH:mm"));
         }
+      }
+    });
+  }
+
+  function editShift(shiftId) {
+    console.log("shift id: " + shiftId);
+    var getAction = #{jsAction @Shifts.getShift(':shift_id') /};
+    $.ajax({
+      type: 'GET',
+      url: getAction({shift_id: shiftId}),
+      success: function(data) {
+        // @debug.
+        //console.log(data);
+        $('#edit_shift_dlg').html(data);
+        $('#edit_shift_dlg').modal('show');
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        bootbox.alert("Error gettting shift info: " + xhr.responseText);
+      }
+    });
+  }
+
+  function updateShiftDuration(shiftId, shiftStart, shiftEnd) {
+    var postAction = #{jsAction @Shifts.updateShiftDuration(':shift_id', ':shift_start', ':shift_end') /};
+    $.ajax({
+      type: 'POST',
+      url: postAction({shift_id: shiftId, shift_start: shiftStart, shift_end: shiftEnd}),
+      success: function(data) {
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        bootbox.alert("Error updating shift: " + xhr.responseText);
       }
     });
   }

@@ -6,3 +6,4 @@ validation.email = %s is invalid.
 validation.minSize = %s must be at least 6 characters.
 validation.equals = %s does not match %s.
 validation.min = %s cannot be lower than %s.
+validation.future = %s must be at least 2 hours after shift start date time.

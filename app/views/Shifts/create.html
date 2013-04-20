@@ -377,7 +377,7 @@
       }
     });
 
-    // Initialize multi-select box.
+    // Initialize multiple select box.
     $("#location").select2({
       placeholder: "Search location ..."
     });
@@ -385,7 +385,6 @@
       placeholder: "Search job title ..."
     });
 
-    // Create shift handler.
     $('#update').click(function() {
       var updateAction = #{jsAction @Shifts.update(':scheduleId') /};
       $.ajax({

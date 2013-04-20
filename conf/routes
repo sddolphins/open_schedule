@@ -58,12 +58,14 @@ DELETE  /locations/{id}                         Locations.delete
 
 # Job Titles
 GET     /jobTitles                              JobTitles.index
-POST    /jobTitles                              JobTitles.create
+POST    /jobTitles/{id}                         JobTitles.update
 DELETE  /jobTitles/{id}                         JobTitles.delete
 
 # Shifts
 GET     /shifts                                 Shifts.index
 POST    /shifts/{id}                            Shifts.update
+POST    /updateShiftDuration                    Shifts.updateShiftDuration
+POST    /updateShiftInfo                        Shifts.updateShiftInfo
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

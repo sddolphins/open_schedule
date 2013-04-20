@@ -2,7 +2,7 @@
     background-color: #eaf5fb;
 
     h4 {
-        background: url(../images/hr.png) repeat-x scroll left bottom;
+        background: url(../images/hr.png) repeat-x bottom;
         margin-bottom: 20px;
         padding-bottom: 12px;
         text-indent: 20px;
@@ -22,8 +22,16 @@
         width: 220px !important;
     }
 
+    div input.edit-field {
+        width: 210px !important;
+    }
+
     div input.input-comment {
         width: 700px !important;
+    }
+
+    div input.edit-input-comment {
+        width: 650px !important;
     }
 
     div select {
@@ -33,7 +41,7 @@
     div .shift_select2 {
         text-indent: 0px;
         width: 260px !important;
-        
+
         input {
             margin-top: 0px;
         }
@@ -42,4 +50,9 @@
     div.input-wrapper {
         margin-bottom: 10px;
     }
+}
+
+#edit_shift_dlg {
+    width: 900px;
+    margin-left: -450px;
 }

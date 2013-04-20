@@ -29,6 +29,7 @@ options {
     };
 
     var opts = jQuery.extend(true, defaults, options);
+
     //if (opts.data) {
       render();
     //}
@@ -36,15 +37,15 @@ options {
     function render() {
       /* Normally the start and end times are calculated based on the min and
          max hours of the data.  However to simplify things a little bit, let's
-         set start and end times from 00:00 to 23:59.
+         set start time to 00:00:00 and end time to 11:59:00 of the next day.
 
       var minHours = 24;
       var startEnd = DateUtils.getBoundaryHoursFromData(opts.data, minHours);
       opts.start = startEnd[0];
       opts.end = startEnd[1];
       */
-      opts.start = Date.today().set({hour: 0, minute: 0, second: 0});
-      opts.end = Date.today().set({hour: 23, minute: 59, second: 59});
+      opts.start = Date.today().clearTime();
+      opts.end = Date.today().add(1).days().set({hour: 11, minute: 59, second: 59});
 
       els.each(function() {
         var container = jQuery(this);

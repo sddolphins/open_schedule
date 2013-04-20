@@ -31,6 +31,7 @@ public class Shift extends Model {
 
     public String contact;
     public String comment;
+    public boolean active;
     public Timestamp dc;
 
     @ManyToOne(targetEntity = Schedule.class, fetch = FetchType.LAZY)
@@ -106,10 +107,14 @@ public class Shift extends Model {
                                                      int scheduleId, int locationId) {
         Calendar endDate = Calendar.getInstance();
         endDate.setTime(startDate);
+        endDate.set(Calendar.HOUR, 0);
+        endDate.set(Calendar.MINUTE, 0);
+        endDate.set(Calendar.SECOND, 0);
         endDate.add(Calendar.DATE, viewByDays);
+        System.out.println("Shifts.findCalendarViewShifts - startDate: " + startDate.toString() + ", endDate: " + endDate.getTime().toString());
 
         return Shift.find("schedule_id = ? and location_id = ? and " +
-                          "date_start >= ? and date_start < ?",
+                          "date_start >= ? and date_start < ? and active = 1",
                           scheduleId, locationId, startDate, endDate.getTime()).fetch();
     }
 }

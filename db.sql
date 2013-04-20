@@ -139,6 +139,8 @@ create table job_title
 (
     id int unsigned not null auto_increment primary key,
     name varchar(80) not null,
+    color varchar(10) not null default '#dbe5f1',
+    open_shift_color varchar(10) not null default '#366092',
     account_id int unsigned not null,
     dc timestamp default 0,
     lu timestamp default now() on update now(),
@@ -267,6 +269,7 @@ create table shift
     date_end datetime not null,
     contact varchar(80),
     comment varchar(255),
+    active bool not null default 1,
     dc timestamp default 0,
     lu timestamp default now() on update now(),
 

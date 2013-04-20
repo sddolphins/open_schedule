@@ -4,7 +4,7 @@
     var spStartDate = new Date();
     $('#sPeriod').datepicker().on('changeDate', function(e) {
       spStartDate = new Date(e.date);
-      spStartDate.setDate(spStartDate.getDate() + 1);
+      spStartDate.add(1).days().clearTime();
 
       // Inform the subscriber a new date selected.
       $.publish("/schedulingPeriod/startDate",  {startDate: spStartDate});
@@ -16,10 +16,10 @@
   <h2><i class="icon-calendar"></i><span class="break"></span>Scheduling Period</h2>
   <div class="box-icon">
     <a href="#" class="btn-setting"><i class="icon-wrench"></i></a>
-    <a href="#" class="btn-minimize"><i class="icon-chevron-down"></i></a>
+    <a href="#" class="btn-minimize"><i class="icon-chevron-up"></i></a>
     <a href="#" class="btn-close"><i class="icon-remove"></i></a>
   </div>
 </div>
-<div class="box-content" id="schedulingPeriod" style="display:none;">
+<div class="box-content" id="schedulingPeriod">
   <div id="sPeriod" class="center"></div>
 </div>

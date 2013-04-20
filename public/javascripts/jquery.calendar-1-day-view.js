@@ -46,13 +46,15 @@ Options {
     };
 
     var opts = jQuery.extend(true, defaults, options);
-    if (opts.data) {
+    if (opts.data && opts.data.length > 0) {
       render();
     }
     else if (opts.dataUrl) {
       jQuery.getJSON(opts.dataUrl, function(data) {
-        opts.data = data;
-        render();
+        if (data && data.length > 0) {
+          opts.data = data;
+          render();
+        }
       });
     }
 
@@ -162,10 +164,11 @@ Options {
     function addBlocks(div, data, cellWidth, start) {
       var rows = jQuery("div.calendarview-blocks div.calendarview-block-container", div);
       var rowIdx = 0;
+      var block;
       for (var i = 0; i < data.length; i++) {
         var size = DateUtils.hoursBetween(data[i].start, data[i].end);
         var offset = DateUtils.hoursBetween(start, data[i].start);
-        var block = jQuery("<div>", {
+        block = jQuery("<div>", {
           "class": "calendarview-block",
           "title": data[i].name + ", " + size + " hours",
           "css": {
@@ -195,9 +198,8 @@ Options {
     }
 
     function addBlockData(block, data) {
-      // This allows custom attributes to be added to the data objects and
-      // makes them available to the 'data' argument of click, resize, and
-      // drag handlers.
+      // This allows custom attributes to be added to the data objects and makes
+      // them available to the 'data' argument of click, resize, and drag handlers.
       var blockData = {
         id: data.id,
         name: data.name,
@@ -268,6 +270,7 @@ Options {
 
     function bindBlockDrag(div, cellWidth, startDate, callback) {
       jQuery("div.calendarview-block", div).draggable({
+        cursor: "move",
         axis: "x",
         grid: [cellWidth, cellWidth],
         stop: function() {
@@ -338,10 +341,7 @@ Options {
     },
 
     getBoundaryHoursFromData: function(data, minHours) {
-      /* Since we set the start and end times in the header from 00:00 to 23:59,
-         we do not need to calculate the boundary hours from data.  The only thing
-         we care is the start date from the data.
-
+      /*
       var minStart = new Date();
       var maxEnd = new Date();
       for (var i = 0; i < data.length; i++) {
@@ -364,10 +364,13 @@ Options {
       maxEnd = minStart.clone().addHours(minHours);
       */
 
+      /*
+      minStart and maxEnd must match the boundary hours in the header.
+      */
       var minStart = Date.parse(data[0].start);
-      minStart.set({hour: 0, minute: 0, second: 0});
+      minStart.clearTime();
       var maxEnd = minStart.clone();
-      maxEnd.set({hour: 23, minute: 59, second: 59});
+      maxEnd.add(1).days().set({hour: 11, minute: 59, second: 59});
 
       return [minStart, maxEnd];
     }
