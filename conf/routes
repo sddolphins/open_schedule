@@ -63,7 +63,7 @@ DELETE  /jobTitles/{id}                         JobTitles.delete
 
 # Shifts
 GET     /shifts                                 Shifts.index
-POST    /shifts/{id}                            Shifts.update
+POST    /shifts/{id}                            Shifts.createShift
 POST    /updateShiftDuration                    Shifts.updateShiftDuration
 POST    /updateShiftInfo                        Shifts.updateShiftInfo
 

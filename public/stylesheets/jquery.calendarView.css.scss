@@ -22,19 +22,45 @@ MIT License Applies
     }
 }
 
+.calendarview-3day-hzheader-hour {
+    float: left;
+    text-align: right;
+    height: 30px;
+    line-height: 30px;
+    color: #777;
+    &.last {
+        border-right: none;
+    }
+}
+
 /* Grid */
+/*
 .calendarview-grid {
+    float: left;
+}
+*/
+
+.calendarview-grid-row {
     float: left;
 }
 
 .calendarview-grid-row-cell {
     float: left;
-    &.last {
-        border-right: none;
-    }
     height: 31px;
     border-right: 1px solid #f0f0f0;
     border-top: 1px solid #f0f0f0;
+    &.last {
+        border-right: none;
+    }
+}
+
+.calendarview-3day-grid-row-cell {
+    float: left;
+    height: 31px;
+    border-top: 1px solid #f0f0f0;
+    &.last {
+        border-right: none;
+    }
 }
 
 /* Blocks */
@@ -67,6 +93,15 @@ MIT License Applies
     color: #f2f2f2;
     padding: 2px 3px;
     margin-left: 26px;
+}
+
+.calendarview-3day-block-text {
+    position: absolute;
+    height: 12px;
+    font-size: 0.8em;
+    color: #f2f2f2;
+    padding: 2px 3px;
+    margin-left: 4px;
 }
 
 /* Adjustments for jQuery UI Styling */

@@ -318,7 +318,7 @@
     </div>
     <div class="row-fluid">
       <div class="span10 offset2">
-        <button id="update" class="btn btn-primary">Create / Post Shift</button>
+        <button id="create" class="btn btn-primary">Create / Post Shift</button>
       </div>
     </div>
 
@@ -385,11 +385,11 @@
       placeholder: "Search job title ..."
     });
 
-    $('#update').click(function() {
-      var updateAction = #{jsAction @Shifts.update(':scheduleId') /};
+    $('#create').click(function() {
+      var postAction = #{jsAction @Shifts.createShift(':scheduleId') /};
       $.ajax({
         type: 'POST',
-        url: updateAction({scheduleId: '${schedule.id}'}),
+        url: postAction({scheduleId: '${schedule.id}'}),
         data: $('#shift_form').serialize(),
         dateType: 'json',
         success: function(data) {

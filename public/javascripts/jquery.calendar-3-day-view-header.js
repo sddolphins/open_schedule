@@ -6,7 +6,7 @@ MIT License Applies
 
 /*
 options {
-    data: object
+    startDate: date
     cellWidth: number
     slideWidth: number
 }
@@ -14,7 +14,7 @@ options {
 
 (function(jQuery) {
 
-  jQuery.fn.calendarView1DayHeader = function() {
+  jQuery.fn.calendarView3DayHeader = function() {
     var args = Array.prototype.slice.call(arguments);
     if (args.length == 1 && typeof(args[0]) == "object") {
         build.call(this, args[0]);
@@ -24,28 +24,20 @@ options {
   function build(options) {
     var els = this;
     var defaults = {
-      cellWidth: 21,
-      slideWidth: 525
+      cellWidth: 7,
+      slideWidth: 504
     };
 
     var opts = jQuery.extend(true, defaults, options);
 
-    //if (opts.data) {
+    if (opts.startDate) {
       render();
-    //}
+    }
 
     function render() {
-      /* Normally the start and end times are calculated based on the min and
-         max hours of the data.  However to simplify things a little bit, let's
-         set start time to 00:00:00 and end time to 11:59:00 of the next day.
-
-      var minHours = 24;
-      var startEnd = DateUtils.getBoundaryHoursFromData(opts.data, minHours);
+      var startEnd = DateUtils.getBoundaryHoursFromData(opts.startDate);
       opts.start = startEnd[0];
       opts.end = startEnd[1];
-      */
-      opts.start = Date.today().clearTime();
-      opts.end = Date.today().add(1).days().set({hour: 11, minute: 59, second: 59});
 
       els.each(function() {
         var container = jQuery(this);
@@ -81,7 +73,7 @@ options {
       hours[start.getMonth()] = [];
       hours[start.getMonth()][start.getDate()] = [start.getHours()];
 
-      var last = start;
+      var last = start.clone();
       while (last.getTime() < end.getTime()) {
         var next = last.clone().addHours(1);
         if (!hours[next.getMonth()]) {
@@ -109,12 +101,33 @@ options {
           var w = hours[m][d].length * cellWidth;
           totalW = totalW + w;
           for (var h in hours[m][d]) {
-            hoursDiv.append(jQuery("<div>", {
-                "class": "calendarview-hzheader-hour",
+            if (h == 7 || h == 15 || h == 23) {
+              if (h == 23) {
+                hoursDiv.append(jQuery("<div>", {
+                  "class": "calendarview-3day-hzheader-hour",
+                  "css": {
+                    "border-right": "1px solid #d0d0d0",
+                    "width": cellWidth + "px"
+                  }
+                }).append(hours[m][d][h]));
+              }
+              else {
+                hoursDiv.append(jQuery("<div>", {
+                  "class": "calendarview-3day-hzheader-hour",
+                  "css": {
+                    "width": (cellWidth-0.3) + "px"
+                  }
+                }).append(hours[m][d][h]));
+              }
+            }
+            else {
+              hoursDiv.append(jQuery("<div>", {
+                "class": "calendarview-3day-hzheader-hour",
                 "css": {
-                    "width": cellWidth-1 + "px"
+                  "width": (cellWidth-0.3) + "px"
                 }
-            }).append(hours[m][d][h]));
+              }));
+            }
           }
         }
       }
@@ -124,7 +137,7 @@ options {
     }
 
     function applyLastClass(div) {
-      jQuery("div.calendarview-hzheader-hours div.calendarview-hzheader-hour:last-child", div).addClass("last");
+      jQuery("div.calendarview-hzheader-hours div.calendarview-3day-hzheader-hour:last-child", div).addClass("last");
     }
 
     return {
@@ -132,33 +145,21 @@ options {
     };
   };
 
-  /*
   var DateUtils = {
-    getBoundaryHoursFromData: function(data, minHours) {
-      var minStart = new Date();
-      var maxEnd = new Date();
-      for (var i = 0; i < data.length; i++) {
-        var start = Date.parse(data[i].start);
-        var end = Date.parse(data[i].end);
-        if (i === 0) {
-          minStart = start;
-          maxEnd = end;
-        }
-        if (minStart.getTime() > start.getTime()) {
-          minStart = start;
-        }
-        if (maxEnd.getTime() < end.getTime()) {
-          maxEnd = end;
-        }
-      }
+    getBoundaryHoursFromData: function(startDate) {
+      // Start at beginning of the start date (hour 0) instead of the hour of
+      // the start date, so that every day is display with 24 hours.
+      var minStart = startDate;
+      minStart.clearTime();
 
-      // Insure that the width of the chart is the minimum number of hours
-      // to avoid empty whitespace to the right of the grid.
-      maxEnd = minStart.clone().addHours(minHours);
+      // To avoid empty white space to the right of the grid, we also display
+      // part of day 4.
+      var maxEnd = minStart.clone();
+      maxEnd.addDays(3);
+      maxEnd.set({hour: 14, minute: 59, second: 59});
 
       return [minStart, maxEnd];
     }
   };
-  */
 
 })(jQuery);

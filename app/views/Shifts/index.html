@@ -81,6 +81,8 @@
 <script src="@{'/public/javascripts/date.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/jquery.calendar-1-day-view-header.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/jquery.calendar-1-day-view.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/jquery.calendar-3-day-view-header.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/jquery.calendar-3-day-view.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 
 <script type="text/javascript">
   var calData = [];
@@ -106,12 +108,11 @@
       west__size: 250,
       applyDefaultStyles: true,
 
+      // Layout resize handler.
       center__onresize: function (pane, $Pane, paneState) {
         innerWidth  = $Pane.innerWidth();
         renderHeader(innerWidth);
-        for (i = 0; i < jobTitleIdArray.length; i++) {
-          getCalendarViewShifts(jobTitleIdArray[i]);
-        };
+        updateCalendarView();
       }
     });
 
@@ -141,6 +142,7 @@
     $.subscribe("/schedulingPeriod/startDate", function(e, data) {
       if (data && Date.equals(startDate, data.startDate) == false) {
         startDate = data.startDate;
+        updateHeaderDateLabel();
         updateCalendarView();
       }
     });
@@ -150,7 +152,9 @@
       if (data) {
         if (viewByDays != data.viewByDays) {
           viewByDays = data.viewByDays;
-          alert("change view to: " + viewByDays + ", day(s)");
+          updateHeaderDateLabel();
+          renderHeader(innerWidth);
+          updateCalendarView();
         }
       }
     });
@@ -164,6 +168,7 @@
         else {
           startDate.add(1).days();
         }
+        updateHeaderDateLabel();
         updateCalendarView();
       }
     });
@@ -196,10 +201,18 @@
     $target.slideToggle();
   }
 
-  function updateCalendarView() {
+  function updateHeaderDateLabel() {
     // Update display start date.
-    $('#lbl_spStartDate').text(startDate.toString('D'));
+    if (viewByDays === "1") {
+      $('#lbl_spStartDate').text(startDate.toString('D'));
+    }
+    else if (viewByDays === "3") {
+      var endDate = startDate.clone().addDays(2);
+      $('#lbl_spStartDate').text(startDate.toString('MMMM dd - ') + endDate.toString('dd, yyyy'));
+    }
+  }
 
+  function updateCalendarView() {
     // Reload calendar view.
     for (i = 0; i < jobTitleIdArray.length; i++) {
       getCalendarViewShifts(jobTitleIdArray[i]);
@@ -211,10 +224,23 @@
     //console.log("job title id: " + jtId);
     //console.log("start date: " + startDate.toString() + ", days: " + viewByDays);
 
-    // Get shifts.
-    var getAction = #{jsAction @Shifts.getCalendarViewShifts(':schedule_id', ':location_id',
-                                                             ':job_title_id', ':start_date',
-                                                             ':view_by_days') /};
+    // Get calendar view shifts.
+    var getAction;
+    if (viewByDays === "1") {
+      getAction = #{jsAction @Shifts.getCalendarViewShifts(':schedule_id', ':location_id',
+                                                           ':job_title_id', ':start_date',
+                                                           ':view_by_days') /};
+    }
+    else if (viewByDays === "3") {
+      getAction = #{jsAction @Shifts.getCalendarViewShifts3Day(':schedule_id', ':location_id',
+                                                               ':job_title_id', ':start_date',
+                                                               ':view_by_days') /};
+    }
+    else {
+      // Invalid view.
+      return;
+    }
+
     $.ajax({
       type: 'GET',
       url: getAction({schedule_id: ${schedule.id},
@@ -241,41 +267,62 @@
 
   function renderHeader(calWidth) {
     $('#calViewHeader').empty();
-    $("#calViewHeader").calendarViewHeader({
-      cellWidth: (calWidth-16) / 37,
-      slideWidth: (calWidth-16)
-    });
+    if (viewByDays === "1") {
+      $("#calViewHeader").calendarView1DayHeader({
+        cellWidth: (calWidth-16) / 37, // 1.5 days.
+        slideWidth: (calWidth-16)
+      });
+    }
+    else if (viewByDays === "3") {
+      $("#calViewHeader").calendarView3DayHeader({
+        startDate: startDate,
+        cellWidth: (calWidth-16) / 88, // 3.5 days.
+        slideWidth: (calWidth-16)
+      });
+    }
   }
 
   function renderShifts(jtId, data, calWidth) {
+    var behavior = {
+      onClick: function(data) {
+        var msg = "You clicked on shift: { id: " + data.id + ", start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
+        $("#eventMessage").text(msg);
+      },
+      onDblClick: function(data) {
+        var msg = "You double-clicked on shift: { id: " + data.id + ", start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
+        $("#eventMessage").text(msg);
+        editShift(data.id);
+      },
+      onResize: function(data) {
+        var msg = "You resized shift: { id: " + data.id + ", start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
+        $("#eventMessage").text(msg);
+        updateShiftDuration(data.id, data.start.toString("MM/d/yyyy HH:mm"), data.end.toString("MM/d/yyyy HH:mm"));
+      },
+      onDrag: function(data) {
+        var msg = "You dragged shift: { id: " + data.id + ", start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
+        $("#eventMessage").text(msg);
+        updateShiftDuration(data.id, data.start.toString("MM/d/yyyy HH:mm"), data.end.toString("MM/d/yyyy HH:mm"));
+      }
+    }
+
     // Render calendar view content.
     $('#jt_content_'+jtId).empty();
-    $("#jt_content_"+jtId).calendarView({
-      data: data,
-      cellWidth: (calWidth-16) / 37,
-      slideWidth: (calWidth-16),
-      behavior: {
-        onClick: function(data) {
-          //var msg = "You clicked on shift: { start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
-          //$("#eventMessage").text(msg);
-        },
-        onDblClick: function(data) {
-          var msg = "You double-clicked on shift: { start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
-          $("#eventMessage").text(msg);
-          editShift(data.id);
-        },
-        onResize: function(data) {
-          var msg = "You resized shift: { id: " + data.id + ", start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
-          $("#eventMessage").text(msg);
-          updateShiftDuration(data.id, data.start.toString("MM/d/yyyy HH:mm"), data.end.toString("MM/d/yyyy HH:mm"));
-        },
-        onDrag: function(data) {
-          var msg = "You dragged shift: { id: " + data.id + ", start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
-          $("#eventMessage").text(msg);
-          updateShiftDuration(data.id, data.start.toString("MM/d/yyyy HH:mm"), data.end.toString("MM/d/yyyy HH:mm"));
-        }
-      }
-    });
+    if (viewByDays === "1") {
+      $("#jt_content_"+jtId).calendarView1Day({
+        data: data,
+        cellWidth: (calWidth-16) / 37, // 1.5 days.
+        slideWidth: (calWidth-16),
+        behavior: behavior
+      });
+    }
+    else if (viewByDays === "3") {
+      $("#jt_content_"+jtId).calendarView3Day({
+        data: data,
+        cellWidth: (calWidth-16) / 88, // 3.5 days.
+        slideWidth: (calWidth-16),
+        behavior: behavior
+      });
+    }
   }
 
   function editShift(shiftId) {

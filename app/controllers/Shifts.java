@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +13,8 @@ import play.data.validation.*;
 import play.templates.TemplateLoader;
 
 import helpers.StatusMessage;
-import models.CalendarShift;
+import models.CalendarViewShift;
+import models.CalendarViewShift3Day;
 import models.EditShift;
 import models.JobTitle;
 import models.Location;
@@ -53,9 +53,9 @@ public class Shifts extends BaseController {
         render(schedule, workShifts, workTypes, workSubtypes, locations, jobTitles);
     }
 
-    public static void update(Long scheduleId) {
+    public static void createShift(Long scheduleId) {
         // @debug.
-        //System.out.println("Shifts.update() - schedule id = " + scheduleId);
+        //System.out.println("Shifts.createShift() - schedule id = " + scheduleId);
 
         // Parse shift info from form.
         Map<String, String[]> values = params.all();
@@ -117,6 +117,8 @@ public class Shifts extends BaseController {
 
         // Make sure that end date/time is after start date/time.
         validation.future("Shift end date time", end, start);
+
+        // TODO: Must validate shift overlapped, safe schedule, etc.
 
         if (validation.hasErrors()) {
             StringBuffer sb = new StringBuffer();
@@ -348,98 +350,32 @@ public class Shifts extends BaseController {
             e.printStackTrace();
         }
 
-        List<CalendarShift> calShifts = new ArrayList<CalendarShift>();
+        // Find all shifts that match selected criterias.
+        List<CalendarViewShift> calShifts = new ArrayList<CalendarViewShift>();
+        calShifts = Shift.findCalendarViewShifts(startDate, viewByDays, scheduleId,
+                                                 locationId, jobTitleId);
+        renderJSON(calShifts);
+    }
 
-        // Find all shifts that matched selected criterias.
-        List<Shift> shifts = Shift.findCalendarViewShifts(startDate, viewByDays, scheduleId, locationId);
-        //System.out.println("Shifts.getCalendarViewShifts - shifts found: " + shifts.size());
-        Iterator<Shift> it = shifts.iterator();
-        while (it.hasNext()) {
-            Shift shift = it.next();
+    public static void getCalendarViewShifts3Day(int scheduleId, int locationId, int jobTitleId,
+                                                 String dateStr, int viewByDays) {
+        // @debug.
+        System.out.println("Shifts.getCalendarViewShifts3Day - start date: " + dateStr + ", days: " + viewByDays + ", job title id: " + jobTitleId);
 
-            // Copy info to be displayed.
-            CalendarShift cs = new CalendarShift();
-            cs.id = shift.id;
-            cs.type = shift.shiftType.id.intValue();
-            cs.start = shift.dateStart;
-            cs.end = shift.dateEnd;
-
-            // Copy specific shift info.
-            boolean addShift = false;
-            boolean foundRestrictions = false;
-            Iterator<ShiftRestriction> srIt = null;
-
-            switch (shift.shiftType.id.intValue()) {
-                case 1: // Postable/Open.
-                    // Are there any job title restrictions?
-                    srIt = shift.restrictions.iterator();
-                    while (srIt.hasNext()) {
-                        ShiftRestriction sr = srIt.next();
-                        if (sr.jobTitle != null) {
-                            //System.out.println("found job title restriction: " + sr.jobTitle.id);
-                            foundRestrictions = true;
-                            if (sr.jobTitle.id.intValue() == jobTitleId) {
-                                addShift = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // If no restrictions found, then everyone can access the shift.
-                    if (!foundRestrictions)
-                        addShift = true;
-
-                    if (addShift) {
-                        JobTitle jt = JobTitle.findById(new Long(jobTitleId));
-                        cs.name = "Open";
-                        cs.image = "/public/images/o.png";
-                        cs.color = jt.openShiftColor;
-                    }
-                    break;
-                 case 2: // Scheduled.
-                    ScheduledShift ss = ScheduledShift.findByShiftId(shift.id);
-                    if (ss.member.jobTitleId != jobTitleId) { // Not matching job title.
-                        continue;
-                    }
-
-                    addShift = true;
-                    JobTitle jt = JobTitle.findById(new Long(ss.member.jobTitleId));
-                    cs.name = ss.member.user.name;
-                    cs.image = "http://www.gravatar.com/avatar/" +
-                               ss.member.user.gravatarHash(ss.member.user.email) + "?s=22";
-                    cs.color = jt.color;
-                    break;
-                case 3: // Selft-schedule.
-                    // Are there any job title restrictions?
-                    srIt = shift.restrictions.iterator();
-                    while (srIt.hasNext()) {
-                        ShiftRestriction sr = srIt.next();
-                        if (sr.jobTitle != null) {
-                            //System.out.println("found job title restriction: " + sr.jobTitle.id);
-                            foundRestrictions = true;
-                            if (sr.jobTitle.id.intValue() == jobTitleId) {
-                                addShift = true;
-                                break;
-                            }
-                        }
-                    }
-
-                     // If no restrictions found, then everyone can access the shift.
-                    if (!foundRestrictions)
-                        addShift = true;
-
-                   if (addShift) {
-                        cs.name = "Self-schedule";
-                        cs.image = "/public/images/ss.png";
-                        cs.color = "#7f7f7f";
-                    }
-                    break;
-            }
-
-            if (addShift) {
-                calShifts.add(cs);
-            }
+        // Convert start date.
+        Date startDate = new Date();
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+            startDate = sdf.parse(dateStr);
         }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        // Find all shifts that match selected criterias.
+        List<CalendarViewShift3Day> calShifts = new ArrayList<CalendarViewShift3Day>();
+        calShifts = Shift.findCalendarViewShifts3Day(startDate, viewByDays, scheduleId,
+                                                     locationId, jobTitleId);
         renderJSON(calShifts);
     }
 
