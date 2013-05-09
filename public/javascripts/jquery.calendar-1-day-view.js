@@ -1,5 +1,5 @@
 /*
-Calendar 1-Day View jQuery plugin v.1.0
+Calendar 1-Day View JQuery plugin v.1.0
 Copyright (c) 2013 Minh Tran - sddolphins@gmail.com
 MIT License Applies
 */
@@ -23,9 +23,9 @@ Options {
 }
 */
 
-(function(jQuery) {
+(function($) {
 
-  jQuery.fn.calendarView1Day = function() {
+  $.fn.calendarView1Day = function() {
       var args = Array.prototype.slice.call(arguments);
       if (args.length == 1 && typeof(args[0]) == "object") {
           build.call(this, args[0]);
@@ -45,12 +45,12 @@ Options {
       }
     };
 
-    var opts = jQuery.extend(true, defaults, options);
+    var opts = $.extend(true, defaults, options);
     if (opts.data && opts.data.length > 0) {
       render();
     }
     else if (opts.dataUrl) {
-      jQuery.getJSON(opts.dataUrl, function(data) {
+      $.getJSON(opts.dataUrl, function(data) {
         if (data && data.length > 0) {
           opts.data = data;
           render();
@@ -65,15 +65,15 @@ Options {
       opts.end = startEnd[1];
 
       els.each(function() {
-        var container = jQuery(this);
-        var div = jQuery("<div>", {
+        var container = $(this);
+        var div = $("<div>", {
           "class": "calendarview"
         });
 
         new Chart(div, opts).render();
         container.append(div);
 
-        var w = jQuery("div.calendarview-slide-container", container).outerWidth();
+        var w = $("div.calendarview-slide-container", container).outerWidth();
         container.css("width", (w + 2) + "px");
 
         new Behavior(container, opts).apply();
@@ -83,7 +83,7 @@ Options {
 
   var Chart = function(div, opts) {
     function render() {
-      var slideDiv = jQuery("<div>", {
+      var slideDiv = $("<div>", {
         "class": "calendarview-slide-container",
         "css": {
           "width": opts.slideWidth + "px"
@@ -121,16 +121,16 @@ Options {
     }
 
     function addGrid(div, data, hours, cellWidth) {
-      var gridDiv = jQuery("<div>", {
+      var gridDiv = $("<div>", {
         "class": "calendarview-grid"
       });
-      var rowDiv = jQuery("<div>", {
+      var rowDiv = $("<div>", {
         "class": "calendarview-grid-row"
       });
       for (var m in hours) {
         for (var d in hours[m]) {
           for (var h in hours[m][d]) {
-            var cellDiv = jQuery("<div>", {
+            var cellDiv = $("<div>", {
               "class": "calendarview-grid-row-cell",
               "css": {
                   "width": cellWidth-1 + "px"
@@ -140,7 +140,7 @@ Options {
           }
         }
       }
-      var w = jQuery("div.calendarview-grid-row-cell", rowDiv).length * cellWidth;
+      var w = $("div.calendarview-grid-row-cell", rowDiv).length * cellWidth;
       rowDiv.css("width", w + "px");
       gridDiv.css("width", w + "px");
       for (var i = 0; i < data.length; i++) {
@@ -150,11 +150,11 @@ Options {
     }
 
     function addBlockContainers(div, data) {
-      var blocksDiv = jQuery("<div>", {
+      var blocksDiv = $("<div>", {
         "class": "calendarview-blocks"
       });
       for (var i = 0; i < data.length; i++) {
-        blocksDiv.append(jQuery("<div>", {
+        blocksDiv.append($("<div>", {
             "class": "calendarview-block-container"
         }));
       }
@@ -162,13 +162,13 @@ Options {
     }
 
     function addBlocks(div, data, cellWidth, start) {
-      var rows = jQuery("div.calendarview-blocks div.calendarview-block-container", div);
+      var rows = $("div.calendarview-blocks div.calendarview-block-container", div);
       var rowIdx = 0;
       var block;
       for (var i = 0; i < data.length; i++) {
         var size = DateUtils.hoursBetween(data[i].start, data[i].end);
         var offset = DateUtils.hoursBetween(start, data[i].start);
-        block = jQuery("<div>", {
+        block = $("<div>", {
           "class": "calendarview-block",
           "title": data[i].name + ", " + size + " hours",
           "css": {
@@ -183,16 +183,16 @@ Options {
         }
 
         var imgSrc = data[i].image;
-        block.append(jQuery("<div>", {
+        block.append($("<div>", {
           "class": "calendarview-block-image"
         }).append('<img src=' + imgSrc + ' />'));
 
         var s = data[i].name + " - " + size + "hrs";
-        block.append(jQuery("<div>", {
+        block.append($("<div>", {
           "class": "calendarview-block-text"
         }).text(s));
 
-        jQuery(rows[rowIdx]).append(block);
+        $(rows[rowIdx]).append(block);
         rowIdx = rowIdx + 1;
       }
     }
@@ -206,12 +206,12 @@ Options {
         start: data.start,
         end: data.end
       };
-      jQuery.extend(blockData);
+      $.extend(blockData);
       block.data("block-data", blockData);
     }
 
     function applyLastClass(div) {
-        jQuery("div.calendarview-grid-row div.calendarview-grid-row-cell:last-child", div).addClass("last");
+        $("div.calendarview-grid-row div.calendarview-grid-row-cell:last-child", div).addClass("last");
     }
 
     return {
@@ -239,27 +239,27 @@ Options {
     }
 
     function bindBlockClick(div, callback) {
-        jQuery("div.calendarview-block", div).on("click", function() {
+        $("div.calendarview-block", div).on("click", function() {
           if (callback) {
-            callback(jQuery(this).data("block-data"));
+            callback($(this).data("block-data"));
           }
         });
     }
 
     function bindBlockDblClick(div, callback) {
-      jQuery("div.calendarview-block", div).on("dblclick", function() {
+      $("div.calendarview-block", div).on("dblclick", function() {
         if (callback) {
-          callback(jQuery(this).data("block-data"));
+          callback($(this).data("block-data"));
         }
       });
     }
 
     function bindBlockResize(div, cellWidth, startDate, callback) {
-      jQuery("div.calendarview-block", div).resizable({
+      $("div.calendarview-block", div).resizable({
         grid: cellWidth,
         handles: "e, w",
         stop: function() {
-          var block = jQuery(this);
+          var block = $(this);
           updateDataAndPosition(div, block, cellWidth, startDate);
           if (callback) {
             callback(block.data("block-data"));
@@ -269,12 +269,12 @@ Options {
     }
 
     function bindBlockDrag(div, cellWidth, startDate, callback) {
-      jQuery("div.calendarview-block", div).draggable({
+      $("div.calendarview-block", div).draggable({
         cursor: "move",
         axis: "x",
         grid: [cellWidth, cellWidth],
         stop: function() {
-          var block = jQuery(this);
+          var block = $(this);
           updateDataAndPosition(div, block, cellWidth, startDate);
           if (callback) {
             callback(block.data("block-data"));
@@ -284,7 +284,7 @@ Options {
     }
 
     function updateDataAndPosition(div, block, cellWidth, startDate) {
-      var container = jQuery("div.calendarview-slide-container", div);
+      var container = $("div.calendarview-slide-container", div);
       var scroll = container.scrollLeft();
       var offset = block.offset().left - container.offset().left + scroll;
 
@@ -301,7 +301,7 @@ Options {
       // Update block text.
       var data = block.data("block-data");
       var s = data.name + " - " + numberOfHours + "hrs";
-      jQuery("div.calendarview-block-text", block).text(s);
+      $("div.calendarview-block-text", block).text(s);
 
       // Update tooltip.
       block.attr('title', data.name + ", " + numberOfHours + " hours");
@@ -375,4 +375,4 @@ Options {
     }
   };
 
-})(jQuery);
+})($);

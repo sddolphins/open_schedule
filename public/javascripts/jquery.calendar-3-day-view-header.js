@@ -1,5 +1,5 @@
 /*
-Calendar 1-Day View Header jQuery plugin v.1.0
+Calendar 3-Day View Header JQuery plugin v.1.0
 Copyright (c) 2013 Minh Tran - sddolphins@gmail.com
 MIT License Applies
 */
@@ -12,9 +12,9 @@ options {
 }
 */
 
-(function(jQuery) {
+(function($) {
 
-  jQuery.fn.calendarView3DayHeader = function() {
+  $.fn.calendarView3DayHeader = function() {
     var args = Array.prototype.slice.call(arguments);
     if (args.length == 1 && typeof(args[0]) == "object") {
         build.call(this, args[0]);
@@ -28,7 +28,7 @@ options {
       slideWidth: 504
     };
 
-    var opts = jQuery.extend(true, defaults, options);
+    var opts = $.extend(true, defaults, options);
 
     if (opts.startDate) {
       render();
@@ -40,8 +40,8 @@ options {
       opts.end = startEnd[1];
 
       els.each(function() {
-        var container = jQuery(this);
-        var div = jQuery("<div>", {
+        var container = $(this);
+        var div = $("<div>", {
             "class": "calendarview"
         });
 
@@ -53,7 +53,7 @@ options {
 
   var Header = function(div, opts) {
     function render() {
-      var slideDiv = jQuery("<div>", {
+      var slideDiv = $("<div>", {
           "class": "calendarview-slide-container",
           "css": {
               "width": opts.slideWidth + "px"
@@ -89,10 +89,10 @@ options {
     }
 
     function addHzHeader(div, hours, cellWidth) {
-      var headerDiv = jQuery("<div>", {
+      var headerDiv = $("<div>", {
           "class": "calendarview-hzheader"
       });
-      var hoursDiv = jQuery("<div>", {
+      var hoursDiv = $("<div>", {
           "class": "calendarview-hzheader-hours"
       });
       var totalW = 0;
@@ -103,16 +103,16 @@ options {
           for (var h in hours[m][d]) {
             if (h == 7 || h == 15 || h == 23) {
               if (h == 23) {
-                hoursDiv.append(jQuery("<div>", {
+                hoursDiv.append($("<div>", {
                   "class": "calendarview-3day-hzheader-hour",
                   "css": {
-                    "border-right": "1px solid #d0d0d0",
-                    "width": cellWidth + "px"
+                    "border-right": "1px solid #777",
+                    "width": (cellWidth-0.3) + "px"
                   }
                 }).append(hours[m][d][h]));
               }
               else {
-                hoursDiv.append(jQuery("<div>", {
+                hoursDiv.append($("<div>", {
                   "class": "calendarview-3day-hzheader-hour",
                   "css": {
                     "width": (cellWidth-0.3) + "px"
@@ -121,7 +121,7 @@ options {
               }
             }
             else {
-              hoursDiv.append(jQuery("<div>", {
+              hoursDiv.append($("<div>", {
                 "class": "calendarview-3day-hzheader-hour",
                 "css": {
                   "width": (cellWidth-0.3) + "px"
@@ -137,7 +137,7 @@ options {
     }
 
     function applyLastClass(div) {
-      jQuery("div.calendarview-hzheader-hours div.calendarview-3day-hzheader-hour:last-child", div).addClass("last");
+      $("div.calendarview-hzheader-hours div.calendarview-3day-hzheader-hour:last-child", div).addClass("last");
     }
 
     return {
@@ -162,4 +162,4 @@ options {
     }
   };
 
-})(jQuery);
+})($);

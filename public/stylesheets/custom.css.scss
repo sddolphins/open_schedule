@@ -79,18 +79,18 @@ p {
 /* footer */
 
 footer {
-  margin-top: 45px;
+  margin-top: 25px;
   padding-top: 5px;
   border-top: 1px solid $grayMediumLight;
   color: #999;
   a {
     color: #555;
-    &:hover { 
+    &:hover {
       color: #222;
     }
-  }  
-  small { 
-    float: left; 
+  }
+  small {
+    float: left;
   }
   ul {
     float: right;

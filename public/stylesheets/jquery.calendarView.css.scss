@@ -33,13 +33,21 @@ MIT License Applies
     }
 }
 
-/* Grid */
-/*
-.calendarview-grid {
+.calendarview-hzheader-day {
     float: left;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    color: #777;
+    border-right: 1px solid #d0d0d0;
+    &.last {
+        border-right: none;
+    }
 }
-*/
 
+/* Grid */
 .calendarview-grid-row {
     float: left;
 }

@@ -1,5 +1,5 @@
 /*
-Calendar 1-Day View Header jQuery plugin v.1.0
+Calendar 1-Day View Header JQuery plugin v.1.0
 Copyright (c) 2013 Minh Tran - sddolphins@gmail.com
 MIT License Applies
 */
@@ -12,9 +12,9 @@ options {
 }
 */
 
-(function(jQuery) {
+(function($) {
 
-  jQuery.fn.calendarView1DayHeader = function() {
+  $.fn.calendarView1DayHeader = function() {
     var args = Array.prototype.slice.call(arguments);
     if (args.length == 1 && typeof(args[0]) == "object") {
         build.call(this, args[0]);
@@ -28,7 +28,7 @@ options {
       slideWidth: 525
     };
 
-    var opts = jQuery.extend(true, defaults, options);
+    var opts = $.extend(true, defaults, options);
 
     //if (opts.data) {
       render();
@@ -48,8 +48,8 @@ options {
       opts.end = Date.today().add(1).days().set({hour: 11, minute: 59, second: 59});
 
       els.each(function() {
-        var container = jQuery(this);
-        var div = jQuery("<div>", {
+        var container = $(this);
+        var div = $("<div>", {
             "class": "calendarview"
         });
 
@@ -61,7 +61,7 @@ options {
 
   var Header = function(div, opts) {
     function render() {
-      var slideDiv = jQuery("<div>", {
+      var slideDiv = $("<div>", {
           "class": "calendarview-slide-container",
           "css": {
               "width": opts.slideWidth + "px"
@@ -97,10 +97,10 @@ options {
     }
 
     function addHzHeader(div, hours, cellWidth) {
-      var headerDiv = jQuery("<div>", {
+      var headerDiv = $("<div>", {
           "class": "calendarview-hzheader"
       });
-      var hoursDiv = jQuery("<div>", {
+      var hoursDiv = $("<div>", {
           "class": "calendarview-hzheader-hours"
       });
       var totalW = 0;
@@ -109,7 +109,7 @@ options {
           var w = hours[m][d].length * cellWidth;
           totalW = totalW + w;
           for (var h in hours[m][d]) {
-            hoursDiv.append(jQuery("<div>", {
+            hoursDiv.append($("<div>", {
                 "class": "calendarview-hzheader-hour",
                 "css": {
                     "width": cellWidth-1 + "px"
@@ -124,7 +124,7 @@ options {
     }
 
     function applyLastClass(div) {
-      jQuery("div.calendarview-hzheader-hours div.calendarview-hzheader-hour:last-child", div).addClass("last");
+      $("div.calendarview-hzheader-hours div.calendarview-hzheader-hour:last-child", div).addClass("last");
     }
 
     return {
@@ -161,4 +161,4 @@ options {
   };
   */
 
-})(jQuery);
+})($);

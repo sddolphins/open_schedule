@@ -228,22 +228,22 @@ public class Shift extends Model {
         return ret;
     }
 
-    public static List<CalendarViewShift3Day> findCalendarViewShifts3Day(Date startDate, int viewByDays,
-                                                                         int scheduleId, int locationId,
-                                                                         int jobTitleId) {
+    public static List<CalendarViewShiftDay> findCalendarViewShiftsDay(Date startDate, int viewByDays,
+                                                                       int scheduleId, int locationId,
+                                                                       int jobTitleId) {
         Calendar endDate = Calendar.getInstance();
         endDate.setTime(startDate);
-        endDate.set(Calendar.HOUR, 0);
-        endDate.set(Calendar.MINUTE, 0);
-        endDate.set(Calendar.SECOND, 0);
-        endDate.add(Calendar.DATE, viewByDays);
+        endDate.set(Calendar.HOUR, 23);
+        endDate.set(Calendar.MINUTE, 59);
+        endDate.set(Calendar.SECOND, 59);
+        endDate.add(Calendar.DATE, viewByDays-1);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        List<CalendarViewShift3Day> ret = new ArrayList<CalendarViewShift3Day>();
+        List<CalendarViewShiftDay> ret = new ArrayList<CalendarViewShiftDay>();
 
         // @debug.
-        System.out.println("Shifts.findCalendarViewShifts3Day - startDate: " + startDate.toString() + ", endDate: " + endDate.getTime().toString());
-        System.out.println("Shifts.findCalendarViewShifts3Day - schedule id: " + scheduleId + ", location id: " + locationId + ", job title id: " + jobTitleId);
+        System.out.println("Shifts.findCalendarViewShiftsDay - startDate: " + startDate.toString() + ", endDate: " + endDate.getTime().toString());
+        System.out.println("Shifts.findCalendarViewShiftsDay - schedule id: " + scheduleId + ", location id: " + locationId + ", job title id: " + jobTitleId);
 
         // Scheduled shifts.
         String queryStr = "select m.user_id, s.id, u.name, u.email, s.date_start, s.date_end, jt.color " +
@@ -264,23 +264,23 @@ public class Shift extends Model {
 
         if (results.size() > 0) {
             long prevUserId = 0;
-            CalendarViewShift3Day cs3day = null;
+            CalendarViewShiftDay cs3day = null;
 
             for (Object[] objects : results) {
                 long userId = ((BigInteger)objects[0]).longValue();
-                System.out.println("Shifts.findCalendarViewShifts3Day - user id: " + userId);
+                System.out.println("Shifts.findCalendarViewShiftsDay - user id: " + userId);
                 if (userId != prevUserId) {
                     if (cs3day != null) {
                         ret.add(cs3day);
                     }
                     prevUserId = userId;
-                    cs3day = new CalendarViewShift3Day(userId);
+                    cs3day = new CalendarViewShiftDay(userId);
                 }
 
                 if (cs3day != null) {
                     CalendarViewShift cs = new CalendarViewShift();
                     cs.id = ((BigInteger)objects[1]).intValue();
-                    System.out.println("Shifts.findCalendarViewShifts3Day - id: " + cs.id);
+                    System.out.println("Shifts.findCalendarViewShiftsDay - id: " + cs.id);
                     cs.name = (String)objects[2];
                     String email = (String)objects[3];
                     cs.image = "http://www.gravatar.com/avatar/" + User.gravatarHash(email) + "?s=22";
@@ -288,7 +288,7 @@ public class Shift extends Model {
                     cs.start = new Date(ts.getTime());
                     ts = (Timestamp)objects[5];
                     cs.end = new Date(ts.getTime());
-                    System.out.println("Shifts.findCalendarViewShifts3Day - start: " + cs.start.toString() + ", end: " + cs.end.toString());
+                    System.out.println("Shifts.findCalendarViewShiftsDay - start: " + cs.start.toString() + ", end: " + cs.end.toString());
                     cs.color = (String)objects[6];
 
                     cs3day.shifts.add(cs);
@@ -301,36 +301,36 @@ public class Shift extends Model {
         }
 
         // Open shifts.
-        List<CalendarViewShift3Day> openShifts = getShiftData(OPEN_SHIFT,
-                                                              startDate, endDate.getTime(),
-                                                              viewByDays, scheduleId,
-                                                              locationId, jobTitleId);
-        Iterator<CalendarViewShift3Day> osIt = openShifts.iterator();
+        List<CalendarViewShiftDay> openShifts = getShiftData(OPEN_SHIFT,
+                                                             startDate, endDate.getTime(),
+                                                             viewByDays, scheduleId,
+                                                             locationId, jobTitleId);
+        Iterator<CalendarViewShiftDay> osIt = openShifts.iterator();
         while (osIt.hasNext()) {
-            CalendarViewShift3Day cs3day = osIt.next();
+            CalendarViewShiftDay cs3day = osIt.next();
             ret.add(cs3day);
         }
 
         // Self-schedule shifts.
-        List<CalendarViewShift3Day> ssShifts = getShiftData(SELF_SCHEDULE_SHIFT,
-                                                            startDate, endDate.getTime(),
-                                                            viewByDays, scheduleId,
-                                                            locationId, jobTitleId);
-        Iterator<CalendarViewShift3Day> ssIt = ssShifts.iterator();
+        List<CalendarViewShiftDay> ssShifts = getShiftData(SELF_SCHEDULE_SHIFT,
+                                                           startDate, endDate.getTime(),
+                                                           viewByDays, scheduleId,
+                                                           locationId, jobTitleId);
+        Iterator<CalendarViewShiftDay> ssIt = ssShifts.iterator();
         while (ssIt.hasNext()) {
-            CalendarViewShift3Day cs3day = ssIt.next();
+            CalendarViewShiftDay cs3day = ssIt.next();
             ret.add(cs3day);
         }
 
         return ret;
     }
 
-    private static List<CalendarViewShift3Day> getShiftData(int shiftType,
-                                                            Date startDate, Date endDate,
-                                                            int viewByDays, int scheduleId,
-                                                            int locationId, int jobTitleId) {
+    private static List<CalendarViewShiftDay> getShiftData(int shiftType,
+                                                           Date startDate, Date endDate,
+                                                           int viewByDays, int scheduleId,
+                                                           int locationId, int jobTitleId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        List<CalendarViewShift3Day> shifts = new ArrayList<CalendarViewShift3Day>();
+        List<CalendarViewShiftDay> shifts = new ArrayList<CalendarViewShiftDay>();
 
         String queryStr;
         if (shiftType == OPEN_SHIFT) {
@@ -407,12 +407,12 @@ public class Shift extends Model {
                     // Find correct place/row to insert shift.
                     int row = shifts.size();
                     boolean insertNewRow = true;
-                    Iterator<CalendarViewShift3Day> osIt = shifts.iterator();
+                    Iterator<CalendarViewShiftDay> osIt = shifts.iterator();
                     while (osIt.hasNext()) {
-                        CalendarViewShift3Day cs3day = osIt.next();
+                        CalendarViewShiftDay cs3day = osIt.next();
 
-                        // Skip over rows already contained shifts for all 3 day.
-                        if (cs3day.shifts.size() == 3)
+                        // Skip over rows already contained shifts in every day.
+                        if (cs3day.shifts.size() == viewByDays)
                             continue;
 
                         // Do not allow more than 1 shifts with same start date
@@ -436,7 +436,7 @@ public class Shift extends Model {
 
                     if (insertNewRow) {
                         row++;
-                        CalendarViewShift3Day cs3day = new CalendarViewShift3Day(row);
+                        CalendarViewShiftDay cs3day = new CalendarViewShiftDay(row);
                         cs3day.shifts.add(cs);
                         shifts.add(cs3day);
                     }

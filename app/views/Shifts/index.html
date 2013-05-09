@@ -83,6 +83,8 @@
 <script src="@{'/public/javascripts/jquery.calendar-1-day-view.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/jquery.calendar-3-day-view-header.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/jquery.calendar-3-day-view.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/jquery.calendar-view-header.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/jquery.calendar-view.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 
 <script type="text/javascript">
   var calData = [];
@@ -143,6 +145,7 @@
       if (data && Date.equals(startDate, data.startDate) == false) {
         startDate = data.startDate;
         updateHeaderDateLabel();
+        renderHeader(innerWidth);
         updateCalendarView();
       }
     });
@@ -169,6 +172,7 @@
           startDate.add(1).days();
         }
         updateHeaderDateLabel();
+        renderHeader(innerWidth);
         updateCalendarView();
       }
     });
@@ -210,6 +214,10 @@
       var endDate = startDate.clone().addDays(2);
       $('#lbl_spStartDate').text(startDate.toString('MMMM dd - ') + endDate.toString('dd, yyyy'));
     }
+    else if (viewByDays === "14") {
+      var endDate = startDate.clone().addDays(13);
+      $('#lbl_spStartDate').text(startDate.toString('MMMM dd - ') + endDate.toString('dd, yyyy'));
+    }
   }
 
   function updateCalendarView() {
@@ -231,14 +239,10 @@
                                                            ':job_title_id', ':start_date',
                                                            ':view_by_days') /};
     }
-    else if (viewByDays === "3") {
-      getAction = #{jsAction @Shifts.getCalendarViewShifts3Day(':schedule_id', ':location_id',
-                                                               ':job_title_id', ':start_date',
-                                                               ':view_by_days') /};
-    }
     else {
-      // Invalid view.
-      return;
+      getAction = #{jsAction @Shifts.getCalendarViewShiftsDay(':schedule_id', ':location_id',
+                                                              ':job_title_id', ':start_date',
+                                                              ':view_by_days') /};
     }
 
     $.ajax({
@@ -280,6 +284,14 @@
         slideWidth: (calWidth-16)
       });
     }
+    else if (viewByDays === "14") {
+      $("#calViewHeader").calendarViewHeader({
+        startDate: startDate,
+        days: 14,
+        cellWidth: (calWidth-16) / 14,
+        slideWidth: (calWidth-16)
+      });
+    }
   }
 
   function renderShifts(jtId, data, calWidth) {
@@ -317,8 +329,19 @@
     }
     else if (viewByDays === "3") {
       $("#jt_content_"+jtId).calendarView3Day({
+        startDate: startDate,
         data: data,
         cellWidth: (calWidth-16) / 88, // 3.5 days.
+        slideWidth: (calWidth-16),
+        behavior: behavior
+      });
+    }
+    else {
+      var days = parseInt(viewByDays);
+      $("#jt_content_"+jtId).calendarView({
+        startDate: startDate,
+        data: data,
+        cellWidth: (calWidth-16) / days,
         slideWidth: (calWidth-16),
         behavior: behavior
       });

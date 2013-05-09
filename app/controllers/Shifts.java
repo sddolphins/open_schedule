@@ -14,7 +14,7 @@ import play.templates.TemplateLoader;
 
 import helpers.StatusMessage;
 import models.CalendarViewShift;
-import models.CalendarViewShift3Day;
+import models.CalendarViewShiftDay;
 import models.EditShift;
 import models.JobTitle;
 import models.Location;
@@ -357,10 +357,10 @@ public class Shifts extends BaseController {
         renderJSON(calShifts);
     }
 
-    public static void getCalendarViewShifts3Day(int scheduleId, int locationId, int jobTitleId,
-                                                 String dateStr, int viewByDays) {
+    public static void getCalendarViewShiftsDay(int scheduleId, int locationId, int jobTitleId,
+                                                String dateStr, int viewByDays) {
         // @debug.
-        System.out.println("Shifts.getCalendarViewShifts3Day - start date: " + dateStr + ", days: " + viewByDays + ", job title id: " + jobTitleId);
+        System.out.println("Shifts.getCalendarViewShiftsDay - start date: " + dateStr + ", days: " + viewByDays + ", job title id: " + jobTitleId);
 
         // Convert start date.
         Date startDate = new Date();
@@ -373,9 +373,9 @@ public class Shifts extends BaseController {
         }
 
         // Find all shifts that match selected criterias.
-        List<CalendarViewShift3Day> calShifts = new ArrayList<CalendarViewShift3Day>();
-        calShifts = Shift.findCalendarViewShifts3Day(startDate, viewByDays, scheduleId,
-                                                     locationId, jobTitleId);
+        List<CalendarViewShiftDay> calShifts = new ArrayList<CalendarViewShiftDay>();
+        calShifts = Shift.findCalendarViewShiftsDay(startDate, viewByDays, scheduleId,
+                                                    locationId, jobTitleId);
         renderJSON(calShifts);
     }
 
