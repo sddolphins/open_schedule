@@ -7,7 +7,7 @@
         background-color: #BDBDBD !important;
     }
 
-    .calendar-view-header {
+    div.calendar-view-header {
         height: 15px;
         border: 1px solid #ddd;
         margin-bottom: -1px;
@@ -26,7 +26,7 @@
         -moz-border-radius: 2px 2px 0px 0px;
         border-radius: 2px 2px 0px 0px;
         overflow: hidden;
-        
+
         h2 {
             font-size: 14px;
             font-weight: bold;
@@ -49,14 +49,14 @@
                 opacity: 1.0;
             }
         }
-            
+
         a {
             color: #006dcc;
             text-decoration: none;
         }
     }
 
-    .calendar-view-content {
+    div.calendar-view-content {
         margin-top: -1px;
         border: 1px solid #ddd;
         background: #fcfcfc;
@@ -67,4 +67,5 @@
         -moz-box-shadow: 0 1px 0px rgba(255, 255, 255, 0.6);
         box-shadow: 0 1px 0px rgba(255, 255, 255, 0.6);
     }
+
 }

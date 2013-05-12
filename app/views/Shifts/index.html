@@ -21,7 +21,7 @@
   <div class="ui-layout-center">
     #{calViewHeader /}
 
-    <div class="box">
+    <div id="header_box" class="box">
       <div class="calendar-view-content">
         <div class="row-fluid">
           <div class="span12">
@@ -33,7 +33,7 @@
 
     #{list items:jobTitles, as:'jt'}
     <div class="box">
-      <div class="calendar-view-header">
+      <div class="calendar-view-header" style="background:${jt.color}">
         <h2><a id="jt-btn-minimize_${jt.id}" href="#" onclick="displayShifts(${jt.id})"><i class="icon-chevron-down"></i></a>${jt.name}</h2>
         <!-- TODO: add reload icon for each job title -->
       </div>
@@ -214,9 +214,10 @@
       var endDate = startDate.clone().addDays(2);
       $('#lbl_spStartDate').text(startDate.toString('MMMM dd - ') + endDate.toString('dd, yyyy'));
     }
-    else if (viewByDays === "14") {
-      var endDate = startDate.clone().addDays(13);
-      $('#lbl_spStartDate').text(startDate.toString('MMMM dd - ') + endDate.toString('dd, yyyy'));
+    else {
+      var days = parseInt(viewByDays);
+      var endDate = startDate.clone().addDays(days-1);
+      $('#lbl_spStartDate').text(startDate.toString('MMMM dd - ') + endDate.toString('MMMM dd, yyyy'));
     }
   }
 
@@ -270,27 +271,34 @@
   }
 
   function renderHeader(calWidth) {
-    $('#calViewHeader').empty();
-    if (viewByDays === "1") {
-      $("#calViewHeader").calendarView1DayHeader({
-        cellWidth: (calWidth-16) / 37, // 1.5 days.
-        slideWidth: (calWidth-16)
-      });
+    var days = parseInt(viewByDays);
+    if (days > 14) { // 4-weeks view.
+      $('#header_box').hide();
     }
-    else if (viewByDays === "3") {
-      $("#calViewHeader").calendarView3DayHeader({
-        startDate: startDate,
-        cellWidth: (calWidth-16) / 88, // 3.5 days.
-        slideWidth: (calWidth-16)
-      });
-    }
-    else if (viewByDays === "14") {
-      $("#calViewHeader").calendarViewHeader({
-        startDate: startDate,
-        days: 14,
-        cellWidth: (calWidth-16) / 14,
-        slideWidth: (calWidth-16)
-      });
+    else {
+      $('#header_box').show();
+      $('#calViewHeader').empty();
+      if (days == 1) {
+        $('#calViewHeader').calendarView1DayHeader({
+          cellWidth: (calWidth-16) / 37, // 1.5 days.
+          slideWidth: (calWidth-16)
+        });
+      }
+      else if (days == 3) {
+        $('#calViewHeader').calendarView3DayHeader({
+          startDate: startDate,
+          cellWidth: (calWidth-16) / 88, // 3.5 days.
+          slideWidth: (calWidth-16)
+        });
+      }
+      else {
+        $('#calViewHeader').calendarViewHeader({
+          startDate: startDate,
+          days: days,
+          cellWidth: (calWidth-16) / days,
+          slideWidth: (calWidth-16)
+        });
+      }
     }
   }
 
@@ -320,7 +328,7 @@
     // Render calendar view content.
     $('#jt_content_'+jtId).empty();
     if (viewByDays === "1") {
-      $("#jt_content_"+jtId).calendarView1Day({
+      $('#jt_content_'+jtId).calendarView1Day({
         data: data,
         cellWidth: (calWidth-16) / 37, // 1.5 days.
         slideWidth: (calWidth-16),
@@ -328,7 +336,7 @@
       });
     }
     else if (viewByDays === "3") {
-      $("#jt_content_"+jtId).calendarView3Day({
+      $('#jt_content_'+jtId).calendarView3Day({
         startDate: startDate,
         data: data,
         cellWidth: (calWidth-16) / 88, // 3.5 days.
@@ -338,7 +346,8 @@
     }
     else {
       var days = parseInt(viewByDays);
-      $("#jt_content_"+jtId).calendarView({
+      $('#jt_content_'+jtId).calendarView({
+        days: days,
         startDate: startDate,
         data: data,
         cellWidth: (calWidth-16) / days,

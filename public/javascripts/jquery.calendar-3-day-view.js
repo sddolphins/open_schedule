@@ -127,17 +127,29 @@ Options {
       var rowDiv = $("<div>", {
         "class": "calendarview-grid-row"
       });
+
+      var bgColor;
       var totalW = 0;
+
       for (var m in hours) {
         for (var d in hours[m]) {
           var w = hours[m][d].length * cellWidth;
           totalW = totalW + w;
+
+          if (d % 2 === 1) {
+            bgColor = "#fafafa";
+          }
+          else {
+            bgColor = "#ffffff";
+          }
+
           for (var h in hours[m][d]) {
             var cellDiv;
             if (h == 23) {
               cellDiv = $("<div>", {
                 "class": "calendarview-3day-grid-row-cell",
                 "css": {
+                  "background-color": bgColor,
                   "border-right": "1px solid #d0d0d0",
                   "width": (cellWidth-0.3) + "px"
                 }
@@ -147,6 +159,7 @@ Options {
               cellDiv = $("<div>", {
                 "class": "calendarview-3day-grid-row-cell",
                 "css": {
+                  "background-color": bgColor,
                   "width": (cellWidth-0.3) + "px"
                 }
               });

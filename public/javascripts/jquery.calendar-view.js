@@ -61,6 +61,9 @@ Options {
       opts.start = startEnd[0];
       opts.end = startEnd[1];
 
+      if (opts.cellWidth < 48)
+        opts.cellWidth = 48;
+
       els.each(function() {
         var container = $(this);
         var div = $("<div>", {
@@ -88,9 +91,12 @@ Options {
       });
 
       days = getDays(opts.start, opts.end);
+      if (opts.days >  14) {
+        addHzHeader(slideDiv, opts.start, days, opts.cellWidth);
+      }
       addGrid(slideDiv, opts.data, days, opts.cellWidth);
       addBlockContainers(slideDiv, opts.data);
-      addBlocks(slideDiv, opts.data, opts.cellWidth, opts.start);
+      addBlocks(slideDiv, opts);
       div.append(slideDiv);
       applyLastClass(div.parent());
     }
@@ -113,6 +119,51 @@ Options {
       return days;
     }
 
+    function addHzHeader(div, start, days, cellWidth) {
+      var headerDiv = $("<div>", {
+          "class": "calendarview-hzheader"
+      });
+      var daysDiv = $("<div>", {
+          "class": "calendarview-hzheader-days"
+      });
+
+      var bgColor;
+      var totalW = 0;
+      var dateStart = start.clone();
+
+      for (var m in days) {
+        for (var d in days[m]) {
+          totalW = totalW + cellWidth;
+
+          // Format header label.
+          var month = parseInt(m, 10);
+          dateStart.set({
+            month: month,
+            day: days[m][d]
+          });
+          var dateLabel = dateStart.toString("ddd") + "<br>" + dateStart.toString("MM/dd");
+
+          if (d % 2 === 1) {
+            bgColor = "#fafafa";
+          }
+          else {
+            bgColor = "#ffffff";
+          }
+
+          daysDiv.append($("<div>", {
+            "class": "calendarview-hzheader-day",
+            "css": {
+              "background-color": bgColor,
+              "width": (cellWidth-1) + "px"
+            }
+          }).append(dateLabel));
+        }
+      }
+      daysDiv.css("width", totalW + "px");
+      headerDiv.append(daysDiv);
+      div.append(headerDiv);
+    }
+
     function addGrid(div, data, days, cellWidth) {
       var gridDiv = $("<div>", {
         "class": "calendarview-grid"
@@ -121,15 +172,24 @@ Options {
         "class": "calendarview-grid-row"
       });
 
+      var bgColor;
       var totalW = 0;
+
       for (var m in days) {
         for (var d in days[m]) {
-          var w = days[m][d].length * cellWidth;
-          totalW = totalW + w;
+          totalW = totalW + cellWidth;
+
+          if (d % 2 === 1) {
+            bgColor = "#fafafa";
+          }
+          else {
+            bgColor = "#ffffff";
+          }
 
           cellDiv = $("<div>", {
             "class": "calendarview-grid-row-cell",
             "css": {
+              "background-color": bgColor,
               "width": (cellWidth-1) + "px"
             }
           });
@@ -158,26 +218,33 @@ Options {
       div.append(blocksDiv);
     }
 
-    function addBlocks(div, data, cellWidth, start) {
+    function addBlocks(div, opts) {
       var rows = $("div.calendarview-blocks div.calendarview-block-container", div);
       var rowIdx = 0;
-      for (var i = 0; i < data.length; i++) {
-        for (var j = 0; j < data[i].shifts.length; j++) {
-          var shift = data[i].shifts[j];
+      for (var i = 0; i < opts.data.length; i++) {
+        for (var j = 0; j < opts.data[i].shifts.length; j++) {
+          var shift = opts.data[i].shifts[j];
           var size = DateUtils.hoursDaysBetween(shift.start, shift.end, true);
-          var offset = DateUtils.hoursDaysBetween(start, shift.start) - 1;
+          var offset = DateUtils.hoursDaysBetween(opts.start, shift.start) - 1;
+          var bottom;
+          if (opts.days >  14) {
+            bottom = (j-1) * 30;
+          }
+          else {
+            bottom = (j * 25);
+          }
 
           var block = $("<div>", {
             "class": "calendarview-block",
             "title": shift.name + ", " + size + " hours",
             "css": {
-              "width": ((cellWidth-0.3) - 4) + "px",
-              "margin-left": (offset * (cellWidth-0.3)) + "px",
-              "bottom": (j * 27) + "px"
+              "width": ((opts.cellWidth-0.3) - 4) + "px",
+              "margin-left": (offset * (opts.cellWidth-0.3)) + "px",
+              "bottom": bottom + "px"
             }
           });
 
-          addBlockData(block, data[i], shift);
+          addBlockData(block, opts.data[i], shift);
           if (shift.color) {
             block.css("background-color", shift.color);
           }
@@ -211,6 +278,7 @@ Options {
 
     function applyLastClass(div) {
         $("div.calendarview-grid-row div.calendarview-grid-row-cell:last-child", div).addClass("last");
+        $("div.calendarview-hzheader-days div.calendarview-hzheader-day:last-child", div).addClass("last");
     }
 
     return {
