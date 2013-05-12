@@ -95,12 +95,27 @@ options {
       var hoursDiv = $("<div>", {
           "class": "calendarview-hzheader-hours"
       });
+
       var totalW = 0;
+      var dateStart = Date.today();
+
       for (var m in hours) {
         for (var d in hours[m]) {
           var w = hours[m][d].length * cellWidth;
           totalW = totalW + w;
+
           for (var h in hours[m][d]) {
+            // Format header label.
+            var mm = parseInt(m, 10);
+            var dd = parseInt(d, 10);
+            var hh = parseInt(h, 10);
+            dateStart.set({
+              month: mm,
+              day: dd,
+              hour: hh
+            });
+
+            var hrLabel = "<br>" + dateStart.toString("HH");
             if (h == 7 || h == 15 || h == 23) {
               if (h == 23) {
                 hoursDiv.append($("<div>", {
@@ -109,7 +124,7 @@ options {
                     "border-right": "1px solid #777",
                     "width": (cellWidth-0.3) + "px"
                   }
-                }).append(hours[m][d][h]));
+                }).append(hrLabel));
               }
               else {
                 hoursDiv.append($("<div>", {
@@ -117,16 +132,27 @@ options {
                   "css": {
                     "width": (cellWidth-0.3) + "px"
                   }
-                }).append(hours[m][d][h]));
+                }).append(hrLabel));
               }
             }
             else {
-              hoursDiv.append($("<div>", {
-                "class": "calendarview-3day-hzheader-hour",
-                "css": {
-                  "width": (cellWidth-0.3) + "px"
-                }
-              }));
+              if (h == 14) { // Display date.
+                hrLabel = dateStart.toString("MM/dd");
+                hoursDiv.append($("<div>", {
+                  "class": "calendarview-3day-hzheader-hour",
+                  "css": {
+                    "width": (cellWidth-0.3) + "px"
+                  }
+                }).append(hrLabel));
+              }
+              else {
+                hoursDiv.append($("<div>", {
+                  "class": "calendarview-3day-hzheader-hour",
+                  "css": {
+                    "width": (cellWidth-0.3) + "px"
+                  }
+                }));
+              }
             }
           }
         }

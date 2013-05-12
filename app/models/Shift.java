@@ -411,7 +411,8 @@ public class Shift extends Model {
                     while (osIt.hasNext()) {
                         CalendarViewShiftDay cs3day = osIt.next();
 
-                        // Skip over rows already contained shifts in every day.
+                        // Skip over rows that's already full or contained
+                        // shifts for each day.
                         if (cs3day.shifts.size() == viewByDays)
                             continue;
 

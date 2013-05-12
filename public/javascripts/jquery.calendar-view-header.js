@@ -41,6 +41,9 @@ options {
       opts.start = startEnd[0];
       opts.end = startEnd[1];
 
+      if (opts.cellWidth < 48)
+        opts.cellWidth = 48;
+
       els.each(function() {
         var container = $(this);
         var div = $("<div>", {
@@ -63,7 +66,7 @@ options {
       });
 
       days = getDays(opts.start, opts.end);
-      addHzHeader(slideDiv, days, opts.cellWidth);
+      addHzHeader(slideDiv, opts.start, days, opts.cellWidth);
       div.append(slideDiv);
       applyLastClass(div.parent());
     }
@@ -86,10 +89,7 @@ options {
       return days;
     }
 
-    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-    function addHzHeader(div, days, cellWidth) {
+    function addHzHeader(div, start, days, cellWidth) {
       var headerDiv = $("<div>", {
           "class": "calendarview-hzheader"
       });
@@ -99,13 +99,22 @@ options {
 
       var bgColor;
       var totalW = 0;
+      var dateStart = start.clone();
+
       for (var m in days) {
         for (var d in days[m]) {
-          var w = days[m][d].length * cellWidth;
-          totalW = totalW + w;
+          totalW = totalW + cellWidth;
+
+          // Format header label.
+          var month = parseInt(m, 10);
+          dateStart.set({
+            month: month,
+            day: days[m][d]
+          });
+          var dateLabel = dateStart.toString("ddd") + "<br>" + dateStart.toString("MM/dd");
 
           if (d % 2 === 1) {
-            bgColor = "#f0f0f0";
+            bgColor = "#fafafa";
           }
           else {
             bgColor = "#ffffff";
@@ -117,7 +126,7 @@ options {
               "background-color": bgColor,
               "width": (cellWidth-1) + "px"
             }
-          }).append(monthNames[m] + " " + days[m][d]));
+          }).append(dateLabel));
         }
       }
       daysDiv.css("width", totalW + "px");
