@@ -235,8 +235,9 @@ Options {
           }
 
           var block = $("<div>", {
-            "class": "calendarview-block",
-            "title": shift.name + ", " + size + " hours",
+            "id": shift.id,
+            "popBgColor": shift.color,
+            "class": "calendarview-block pop",
             "css": {
               "width": ((opts.cellWidth-0.3) - 4) + "px",
               "margin-left": (offset * (opts.cellWidth-0.3)) + "px",

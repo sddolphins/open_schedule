@@ -67,6 +67,22 @@
   </div>
 </div>
 
+<div id="popover-shift" style="display:none;">
+  <label id="po_shift_date"></label>
+  <label id="po_shift_duration"></label>
+  <hr>
+  <div id="po_scheduled" style="display:none;">
+    <label>Scheduled Staff</label>
+    <div class="row-fluid">
+      <div class="span5"><img id="po_staff_img" src="" /></div>
+      <div class="span7">
+        <label>&nbsp;</label>
+        <label id="po_staff_name"></label>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- debug, remove when done -->
 <div id="eventMessage"></div>
 
@@ -176,6 +192,7 @@
         updateCalendarView();
       }
     });
+
   });
 
   function displayShifts(jtId) {
@@ -234,18 +251,9 @@
     //console.log("start date: " + startDate.toString() + ", days: " + viewByDays);
 
     // Get calendar view shifts.
-    var getAction;
-    if (viewByDays === "1") {
-      getAction = #{jsAction @Shifts.getCalendarViewShifts(':schedule_id', ':location_id',
-                                                           ':job_title_id', ':start_date',
-                                                           ':view_by_days') /};
-    }
-    else {
-      getAction = #{jsAction @Shifts.getCalendarViewShiftsDay(':schedule_id', ':location_id',
-                                                              ':job_title_id', ':start_date',
-                                                              ':view_by_days') /};
-    }
-
+    var getAction = #{jsAction @Shifts.getCalendarViewShifts(':schedule_id', ':location_id',
+                                                             ':job_title_id', ':start_date',
+                                                             ':view_by_days') /};
     $.ajax({
       type: 'GET',
       url: getAction({schedule_id: ${schedule.id},
@@ -261,6 +269,48 @@
         calData = data;
         renderShifts(jtId, calData, innerWidth);
 
+        // Initialize popover for each shift.
+        $('.pop').each(function() {
+          var $el = $(this);
+          $el.popover({
+            trigger: 'manual',
+            html: true,
+            title: 'Shift Detail',
+            content: getPopContent($el.attr('id')),
+            // Auto placement.
+            placement: function (tip, element) {
+              var offset = $(element).offset();
+              height = $(document).outerHeight();
+              width = $(document).outerWidth();
+              vert = 0.5 * height - offset.top;
+              vertPlacement = vert > 0 ? 'bottom' : 'top';
+              horiz = 0.5 * width - offset.left;
+              horizPlacement = horiz > 0 ? 'right' : 'left';
+              placement = Math.abs(horiz) > Math.abs(vert) ?  horizPlacement : vertPlacement;
+              return placement;
+            }
+          }).on('mouseenter', function() {
+            $(this).popover('show');
+            $(this).next().find('.popover-title').css('background-color', $el.attr('popBgColor'));
+            /*
+            $(this).siblings(".popover").on("mouseleave", function() {
+              $(this).hide();
+            });
+            */
+          }).on('mouseleave', function() {
+            $(this).popover('hide');
+            /*
+            var _this = this;
+            // setTimeout provides enough time to move inside the popover.
+            setTimeout(function() {
+              if (!$(".popover:hover").length) {
+                $(_this).popover("hide");
+              }
+            }, 100);
+            */
+          });
+        });
+
         // Prevent from loading again when minimize.
         $('#reload_jt_'+jtId).val("false");
       },
@@ -269,6 +319,34 @@
       }
     });
   }
+
+  function getPopContent(target) {
+    //console.log("popover id: " + target);
+    var getAction = #{jsAction @Shifts.getPopoverShift(':shift_id') /};
+    $.ajax({
+      type: 'GET',
+      async: false,
+      cache: false,
+      url: getAction({shift_id: target}),
+      success: function(data) {
+        //console.log(data);
+        $('#po_shift_date').text(data.date);
+        $('#po_shift_duration').text(data.time + ' (' + data.duration + ')');
+        if (data.type == 2) {
+          $('#po_staff_img').attr('src', data.memberImage);
+          $('#po_staff_name').text(data.memberName + ', ' + data.memberTitle);
+          $('#po_scheduled').show();
+        }
+        else {
+          $('#po_scheduled').hide();
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        bootbox.alert("Error gettting popover shift info: " + xhr.responseText);
+      }
+    });
+    return $('#popover-shift').html();
+  };
 
   function renderHeader(calWidth) {
     var days = parseInt(viewByDays);
@@ -302,8 +380,12 @@
     }
   }
 
-  function renderShifts(jtId, data, calWidth) {
+  function renderShifts(jtId, calData, calWidth) {
     var behavior = {
+      onCellClick: function(data) {
+        var msg = "You clicked on cell: { date: " + data.date + ", hour: " + data.hour + " }";
+        $("#eventMessage").text(msg);
+      },
       onClick: function(data) {
         var msg = "You clicked on shift: { id: " + data.id + ", start: " + data.start.toString("MM/d/yyyy HH:mm") + ", end: " + data.end.toString("MM/d/yyyy HH:mm") + " }";
         $("#eventMessage").text(msg);
@@ -329,7 +411,7 @@
     $('#jt_content_'+jtId).empty();
     if (viewByDays === "1") {
       $('#jt_content_'+jtId).calendarView1Day({
-        data: data,
+        data: calData,
         cellWidth: (calWidth-16) / 37, // 1.5 days.
         slideWidth: (calWidth-16),
         behavior: behavior
@@ -338,7 +420,7 @@
     else if (viewByDays === "3") {
       $('#jt_content_'+jtId).calendarView3Day({
         startDate: startDate,
-        data: data,
+        data: calData,
         cellWidth: (calWidth-16) / 88, // 3.5 days.
         slideWidth: (calWidth-16),
         behavior: behavior
@@ -349,7 +431,7 @@
       $('#jt_content_'+jtId).calendarView({
         days: days,
         startDate: startDate,
-        data: data,
+        data: calData,
         cellWidth: (calWidth-16) / days,
         slideWidth: (calWidth-16),
         behavior: behavior
@@ -359,7 +441,7 @@
 
   function editShift(shiftId) {
     console.log("shift id: " + shiftId);
-    var getAction = #{jsAction @Shifts.getShift(':shift_id') /};
+    var getAction = #{jsAction @Shifts.getEditShift(':shift_id') /};
     $.ajax({
       type: 'GET',
       url: getAction({shift_id: shiftId}),
@@ -370,7 +452,7 @@
         $('#edit_shift_dlg').modal('show');
       },
       error: function(xhr, ajaxOptions, thrownError) {
-        bootbox.alert("Error gettting shift info: " + xhr.responseText);
+        bootbox.alert("Error gettting edit shift info: " + xhr.responseText);
       }
     });
   }

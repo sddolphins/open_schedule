@@ -20,6 +20,7 @@ import models.JobTitle;
 import models.Location;
 import models.Member;
 import models.OpenShift;
+import models.PopoverShift;
 import models.Schedule;
 import models.ScheduledShift;
 import models.SelfScheduleShift;
@@ -351,35 +352,13 @@ public class Shifts extends BaseController {
         }
 
         // Find all shifts that match selected criterias.
-        List<CalendarViewShift> calShifts = new ArrayList<CalendarViewShift>();
+        List<CalendarViewShiftDay> calShifts = new ArrayList<CalendarViewShiftDay>();
         calShifts = Shift.findCalendarViewShifts(startDate, viewByDays, scheduleId,
                                                  locationId, jobTitleId);
         renderJSON(calShifts);
     }
 
-    public static void getCalendarViewShiftsDay(int scheduleId, int locationId, int jobTitleId,
-                                                String dateStr, int viewByDays) {
-        // @debug.
-        System.out.println("Shifts.getCalendarViewShiftsDay - start date: " + dateStr + ", days: " + viewByDays + ", job title id: " + jobTitleId);
-
-        // Convert start date.
-        Date startDate = new Date();
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-            startDate = sdf.parse(dateStr);
-        }
-        catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        // Find all shifts that match selected criterias.
-        List<CalendarViewShiftDay> calShifts = new ArrayList<CalendarViewShiftDay>();
-        calShifts = Shift.findCalendarViewShiftsDay(startDate, viewByDays, scheduleId,
-                                                    locationId, jobTitleId);
-        renderJSON(calShifts);
-    }
-
-    public static void getShift(int shiftId) {
+    public static void getEditShift(long shiftId) {
         // @debug.
         System.out.println("Shifts.getShift() - shift id: " + shiftId);
         Shift shift = Shift.findById(new Long(shiftId));
@@ -401,5 +380,13 @@ public class Shifts extends BaseController {
         // Load template.
         String html = TemplateLoader.load("Shifts/editShift.html").render(params);
         renderText(html);
+    }
+
+    public static void getPopoverShift(long shiftId) {
+        // @debug.
+        System.out.println("Shifts.getPopoverShift() - shift id: " + shiftId);
+        Shift shift = Shift.findById(new Long(shiftId));
+        PopoverShift pos = new PopoverShift(shift);
+        renderJSON(pos);
     }
 }

@@ -11,14 +11,10 @@ Options {
     slideWidth: number
     dataUrl: string
     behavior: {
-        header-day
         clickable: boolean,
+        dblclickable: boolean,
         draggable: boolean,
-        resizable: boolean,
-        onClick: function,
-        onDblClick: function,
-        onDrag: function,
-        onResize: function
+        resizable: boolean
     }
 }
 */
@@ -98,26 +94,26 @@ Options {
       applyLastClass(div.parent());
     }
 
-    // Creates a 3 dimensional array [month][date][hour] of every hour
-    // between the given start and end dates.
+    // Creates a 3 dimensional array [month][date][hour] of every hour between
+    // the given start and end dates.
     function getHours(start, end) {
-      var hours = [];
-      hours[start.getMonth()] = [];
-      hours[start.getMonth()][start.getDate()] = [start.getHours()];
+      var mdh = [];
+      mdh[start.getMonth()] = [];
+      mdh[start.getMonth()][start.getDate()] = [start.getHours()];
 
       var last = start.clone();
       while (last.getTime() < end.getTime()) {
         var next = last.clone().addHours(1);
-        if (!hours[next.getMonth()]) {
-          hours[next.getMonth()] = [];
+        if (!mdh[next.getMonth()]) {
+          mdh[next.getMonth()] = [];
         }
-        if (!hours[next.getMonth()][next.getDate()]) {
-          hours[next.getMonth()][next.getDate()] = [];
+        if (!mdh[next.getMonth()][next.getDate()]) {
+          mdh[next.getMonth()][next.getDate()] = [];
         }
-        hours[next.getMonth()][next.getDate()].push(next.getHours());
+        mdh[next.getMonth()][next.getDate()].push(next.getHours());
         last = next;
       }
-      return hours;
+      return mdh;
     }
 
     function addGrid(div, data, hours, cellWidth) {
@@ -131,11 +127,18 @@ Options {
         for (var d in hours[m]) {
           for (var h in hours[m][d]) {
             var cellDiv = $("<div>", {
+              "id": d + "_" + h,
               "class": "calendarview-grid-row-cell",
               "css": {
                   "width": cellWidth-1 + "px"
               }
             });
+
+            cellDiv.attr({
+              date: d,
+              hour: h
+            });
+            //addCellData(cellDiv, hours);
             rowDiv.append(cellDiv);
           }
         }
@@ -164,94 +167,120 @@ Options {
     function addBlocks(div, data, cellWidth, start) {
       var rows = $("div.calendarview-blocks div.calendarview-block-container", div);
       var rowIdx = 0;
-      var block;
       for (var i = 0; i < data.length; i++) {
-        var size = DateUtils.hoursBetween(data[i].start, data[i].end);
-        var offset = DateUtils.hoursBetween(start, data[i].start);
-        block = $("<div>", {
-          "class": "calendarview-block",
-          "title": data[i].name + ", " + size + " hours",
-          "css": {
-            "width": ((size * cellWidth) - 4) + "px",
-            "margin-left": (offset * cellWidth) + "px"
+        for (var j = 0; j < data[i].shifts.length; j++) {
+          var shift = data[i].shifts[j];
+          var size = DateUtils.hoursBetween(shift.start, shift.end);
+          var offset = DateUtils.hoursBetween(start, shift.start);
+
+          var block = $("<div>", {
+            "id": shift.id,
+            "popBgColor": shift.color,
+            "class": "calendarview-block pop",
+            "css": {
+              "width": ((size * cellWidth) - 4) + "px",
+              "margin-left": (offset * cellWidth) + "px",
+              "bottom": (j * 27) + "px"
+            }
+          });
+
+          addBlockData(block, shift);
+          if (shift.color) {
+            block.css("background-color", shift.color);
           }
-        });
 
-        addBlockData(block, data[i]);
-        if (data[i].color) {
-          block.css("background-color", data[i].color);
+          var imgSrc = shift.image;
+          block.append($("<div>", {
+            "class": "calendarview-block-image"
+          }).append('<img src=' + imgSrc + ' />'));
+
+          var s = shift.name + " - " + size + "hrs";
+          block.append($("<div>", {
+            "class": "calendarview-block-text"
+          }).text(s));
+          $(rows[rowIdx]).append(block);
         }
-
-        var imgSrc = data[i].image;
-        block.append($("<div>", {
-          "class": "calendarview-block-image"
-        }).append('<img src=' + imgSrc + ' />'));
-
-        var s = data[i].name + " - " + size + "hrs";
-        block.append($("<div>", {
-          "class": "calendarview-block-text"
-        }).text(s));
-
-        $(rows[rowIdx]).append(block);
         rowIdx = rowIdx + 1;
       }
     }
 
-    function addBlockData(block, data) {
+    function addCellData(cell, hours) {
+      // This allows custom attributes to be added to the data objects and makes
+      // them available to the 'data' argument of click handler.
+      var cellData = {
+        hours: hours
+      };
+      $.extend(cellData);
+      cell.data("cell-data", cellData);
+    }
+
+    function addBlockData(block, shift) {
       // This allows custom attributes to be added to the data objects and makes
       // them available to the 'data' argument of click, resize, and drag handlers.
       var blockData = {
-        id: data.id,
-        name: data.name,
-        start: data.start,
-        end: data.end
+        id: shift.id,
+        name: shift.name,
+        start: shift.start,
+        end: shift.end
       };
       $.extend(blockData);
       block.data("block-data", blockData);
     }
 
     function applyLastClass(div) {
-        $("div.calendarview-grid-row div.calendarview-grid-row-cell:last-child", div).addClass("last");
+      $("div.calendarview-grid-row div.calendarview-grid-row-cell:last-child", div).addClass("last");
     }
 
     return {
-        render: render
+      render: render
     };
   };
 
   var Behavior = function(div, opts) {
     function apply() {
-        if (opts.behavior.clickable) {
-          bindBlockClick(div, opts.behavior.onClick);
-        }
+      if (opts.behavior.clickable) {
+        bindCellClick(div, opts.behavior.onCellClick);
+        bindBlockClick(div, opts.behavior.onClick);
+      }
 
-        if (opts.behavior.dblclickable) {
-          bindBlockDblClick(div, opts.behavior.onDblClick);
-        }
+      if (opts.behavior.dblclickable) {
+        bindBlockDblClick(div, opts.behavior.onDblClick);
+      }
 
-        if (opts.behavior.resizable) {
-          bindBlockResize(div, opts.cellWidth, opts.start, opts.behavior.onResize);
-        }
+      if (opts.behavior.resizable) {
+        bindBlockResize(div, opts.cellWidth, opts.start, opts.behavior.onResize);
+      }
 
-        if (opts.behavior.draggable) {
-          bindBlockDrag(div, opts.cellWidth, opts.start, opts.behavior.onDrag);
+      if (opts.behavior.draggable) {
+        bindBlockDrag(div, opts.cellWidth, opts.start, opts.behavior.onDrag);
+      }
+    }
+
+    function bindCellClick(div, callback) {
+      $("div.calendarview-grid-row-cell", div).on("click", function() {
+        if (callback) {
+          var data = {};
+          data.date = $(this).attr("date");
+          data.hour = $(this).attr("hour");
+          callback(data);
         }
+      });
     }
 
     function bindBlockClick(div, callback) {
-        $("div.calendarview-block", div).on("click", function() {
-          if (callback) {
-            callback($(this).data("block-data"));
-          }
-        });
-    }
-
-    function bindBlockDblClick(div, callback) {
-      $("div.calendarview-block", div).on("dblclick", function() {
+      $("div.calendarview-block", div).on("click", function() {
         if (callback) {
           callback($(this).data("block-data"));
         }
       });
+    }
+
+    function bindBlockDblClick(div, callback) {
+    $("div.calendarview-block", div).on("dblclick", function() {
+      if (callback) {
+        callback($(this).data("block-data"));
+      }
+    });
     }
 
     function bindBlockResize(div, cellWidth, startDate, callback) {
@@ -304,7 +333,7 @@ Options {
       $("div.calendarview-block-text", block).text(s);
 
       // Update tooltip.
-      block.attr('title', data.name + ", " + numberOfHours + " hours");
+      //block.attr('title', data.name + ", " + numberOfHours + " hours");
 
       // Remove top and left properties to avoid incorrect block positioning,
       // set position to relative to keep blocks relative to scrollbar when
@@ -366,7 +395,7 @@ Options {
       /*
       minStart and maxEnd must match the boundary hours in the header.
       */
-      var minStart = Date.parse(data[0].start);
+      var minStart = Date.parse(data[0].shifts[0].start);
       minStart.clearTime();
       var maxEnd = minStart.clone();
       maxEnd.add(1).days().set({hour: 11, minute: 59, second: 59});

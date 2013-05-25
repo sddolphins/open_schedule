@@ -12,6 +12,7 @@ import play.Logger;
 
 import helpers.StatusMessage;
 import models.Account;
+import models.JobTitle;
 import models.Location;
 import models.Member;
 import models.MemberLocation;
@@ -40,6 +41,8 @@ public class Members extends BaseController {
         String name = values.get("name")[0];
         String email = values.get("email")[0];
         Long roleId = new Long(values.get("role_id")[0]);
+
+        // @debug.
         System.out.println("Members.create(): accountId = " + accountId + ", scheduleId = " + scheduleId);
         System.out.println("Members.create(): name = " + name + ", email = " + email + ", role =  " + roleId);
 
@@ -171,7 +174,8 @@ public class Members extends BaseController {
             }
         }
         if (jobTitle != null && jobTitle.trim().length() > 0) {
-            member.jobTitleId = Integer.parseInt(jobTitle);
+            JobTitle jt = JobTitle.findById(new Long(jobTitle));
+            member.jobTitle = jt;
         }
         if (status != null && status.trim().length() > 0) {
             member.employeeStatusId = Integer.parseInt(status);

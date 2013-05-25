@@ -115,122 +115,9 @@ public class Shift extends Model {
         return Shift.find("shift_status_id", shiftStatusId).fetch();
     }
 
-    public static List<CalendarViewShift> findCalendarViewShifts(Date startDate, int viewByDays,
-                                                                 int scheduleId, int locationId,
-                                                                 int jobTitleId) {
-        Calendar endDate = Calendar.getInstance();
-        endDate.setTime(startDate);
-        endDate.set(Calendar.HOUR, 0);
-        endDate.set(Calendar.MINUTE, 0);
-        endDate.set(Calendar.SECOND, 0);
-        endDate.add(Calendar.DATE, viewByDays);
-
-        List<CalendarViewShift> ret = new ArrayList<CalendarViewShift>();
-
-        // @debug.
-        System.out.println("Shifts.findCalendarViewShifts - startDate: " + startDate.toString() + ", endDate: " + endDate.getTime().toString());
-        System.out.println("Shifts.findCalendarViewShifts - schedule id: " + scheduleId + ", location id: " + locationId);
-
-        List<Shift> shifts =  Shift.find("schedule_id = ? and location_id = ? and " +
-                                         "date_start >= ? and date_start < ? and active = 1",
-                                         scheduleId, locationId, startDate, endDate.getTime()).fetch();
-        // @debug.
-        //System.out.println("Shifts.findCalendarViewShifts - shifts found: " + shifts.size());
-
-        Iterator<Shift> it = shifts.iterator();
-        while (it.hasNext()) {
-            Shift shift = it.next();
-
-            // Copy info to be displayed.
-            CalendarViewShift cs = new CalendarViewShift();
-            cs.id = shift.id;
-            cs.type = shift.shiftType.id.intValue();
-            cs.start = shift.dateStart;
-            cs.end = shift.dateEnd;
-
-            // Copy specific shift info based on shift type.
-            boolean addShift = false;
-            boolean foundRestrictions = false;
-            Iterator<ShiftRestriction> srIt = null;
-
-            switch (shift.shiftType.id.intValue()) {
-                case 1: // Postable/Open.
-                    // Are there any job title restrictions?
-                    srIt = shift.restrictions.iterator();
-                    while (srIt.hasNext()) {
-                        ShiftRestriction sr = srIt.next();
-                        if (sr.jobTitle != null) {
-                            //System.out.println("found matching job title restriction: " + sr.jobTitle.id);
-                            foundRestrictions = true;
-                            if (sr.jobTitle.id.intValue() == jobTitleId) {
-                                addShift = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // If no restrictions found, then everyone can access the shift.
-                    if (!foundRestrictions)
-                        addShift = true;
-
-                    if (addShift) {
-                        JobTitle jt = JobTitle.findById(new Long(jobTitleId));
-                        cs.name = "Open";
-                        cs.image = "/public/images/o.png";
-                        cs.color = jt.openShiftColor;
-                    }
-                    break;
-                 case 2: // Scheduled.
-                    ScheduledShift ss = ScheduledShift.findByShiftId(shift.id);
-                    if (ss.member.jobTitleId != jobTitleId) { // Not matching job title.
-                        //System.out.println("Skip job title id: " + ss.member.jobTitleId);
-                        continue;
-                    }
-
-                    addShift = true;
-                    JobTitle jt = JobTitle.findById(new Long(ss.member.jobTitleId));
-                    cs.name = ss.member.user.name;
-                    cs.image = "http://www.gravatar.com/avatar/" +
-                               ss.member.user.gravatarHash(ss.member.user.email) + "?s=22";
-                    cs.color = jt.color;
-                    break;
-                case 3: // Selft-schedule.
-                    // Are there any job title restrictions?
-                    srIt = shift.restrictions.iterator();
-                    while (srIt.hasNext()) {
-                        ShiftRestriction sr = srIt.next();
-                        if (sr.jobTitle != null) {
-                            //System.out.println("found matching job title restriction: " + sr.jobTitle.id);
-                            foundRestrictions = true;
-                            if (sr.jobTitle.id.intValue() == jobTitleId) {
-                                addShift = true;
-                                break;
-                            }
-                        }
-                    }
-
-                     // If no restrictions found, then everyone can access the shift.
-                    if (!foundRestrictions)
-                        addShift = true;
-
-                   if (addShift) {
-                        cs.name = "Self-schedule";
-                        cs.image = "/public/images/ss.png";
-                        cs.color = "#7f7f7f";
-                    }
-                    break;
-            }
-
-            if (addShift) {
-                ret.add(cs);
-            }
-        }
-        return ret;
-    }
-
-    public static List<CalendarViewShiftDay> findCalendarViewShiftsDay(Date startDate, int viewByDays,
-                                                                       int scheduleId, int locationId,
-                                                                       int jobTitleId) {
+    public static List<CalendarViewShiftDay> findCalendarViewShifts(Date startDate, int viewByDays,
+                                                                    int scheduleId, int locationId,
+                                                                    int jobTitleId) {
         Calendar endDate = Calendar.getInstance();
         endDate.setTime(startDate);
         endDate.set(Calendar.HOUR, 23);
@@ -242,8 +129,8 @@ public class Shift extends Model {
         List<CalendarViewShiftDay> ret = new ArrayList<CalendarViewShiftDay>();
 
         // @debug.
-        System.out.println("Shifts.findCalendarViewShiftsDay - startDate: " + startDate.toString() + ", endDate: " + endDate.getTime().toString());
-        System.out.println("Shifts.findCalendarViewShiftsDay - schedule id: " + scheduleId + ", location id: " + locationId + ", job title id: " + jobTitleId);
+        System.out.println("Shifts.findCalendarViewShifts - startDate: " + startDate.toString() + ", endDate: " + endDate.getTime().toString());
+        System.out.println("Shifts.findCalendarViewShifts - schedule id: " + scheduleId + ", location id: " + locationId + ", job title id: " + jobTitleId);
 
         // Scheduled shifts.
         String queryStr = "select m.user_id, s.id, u.name, u.email, s.date_start, s.date_end, jt.color " +
@@ -264,23 +151,23 @@ public class Shift extends Model {
 
         if (results.size() > 0) {
             long prevUserId = 0;
-            CalendarViewShiftDay cs3day = null;
+            CalendarViewShiftDay cvsday = null;
 
             for (Object[] objects : results) {
                 long userId = ((BigInteger)objects[0]).longValue();
-                System.out.println("Shifts.findCalendarViewShiftsDay - user id: " + userId);
+                System.out.println("Shifts.findCalendarViewShifts - user id: " + userId);
                 if (userId != prevUserId) {
-                    if (cs3day != null) {
-                        ret.add(cs3day);
+                    if (cvsday != null) {
+                        ret.add(cvsday);
                     }
                     prevUserId = userId;
-                    cs3day = new CalendarViewShiftDay(userId);
+                    cvsday = new CalendarViewShiftDay(userId);
                 }
 
-                if (cs3day != null) {
+                if (cvsday != null) {
                     CalendarViewShift cs = new CalendarViewShift();
                     cs.id = ((BigInteger)objects[1]).intValue();
-                    System.out.println("Shifts.findCalendarViewShiftsDay - id: " + cs.id);
+                    System.out.println("Shifts.findCalendarViewShifts - id: " + cs.id);
                     cs.name = (String)objects[2];
                     String email = (String)objects[3];
                     cs.image = "http://www.gravatar.com/avatar/" + User.gravatarHash(email) + "?s=22";
@@ -288,15 +175,15 @@ public class Shift extends Model {
                     cs.start = new Date(ts.getTime());
                     ts = (Timestamp)objects[5];
                     cs.end = new Date(ts.getTime());
-                    System.out.println("Shifts.findCalendarViewShiftsDay - start: " + cs.start.toString() + ", end: " + cs.end.toString());
+                    System.out.println("Shifts.findCalendarViewShifts - start: " + cs.start.toString() + ", end: " + cs.end.toString());
                     cs.color = (String)objects[6];
 
-                    cs3day.shifts.add(cs);
+                    cvsday.shifts.add(cs);
                 }
             }
 
-            if (cs3day != null) {
-                ret.add(cs3day);
+            if (cvsday != null) {
+                ret.add(cvsday);
             }
         }
 
@@ -307,8 +194,8 @@ public class Shift extends Model {
                                                              locationId, jobTitleId);
         Iterator<CalendarViewShiftDay> osIt = openShifts.iterator();
         while (osIt.hasNext()) {
-            CalendarViewShiftDay cs3day = osIt.next();
-            ret.add(cs3day);
+            CalendarViewShiftDay cvsday = osIt.next();
+            ret.add(cvsday);
         }
 
         // Self-schedule shifts.
@@ -318,8 +205,8 @@ public class Shift extends Model {
                                                            locationId, jobTitleId);
         Iterator<CalendarViewShiftDay> ssIt = ssShifts.iterator();
         while (ssIt.hasNext()) {
-            CalendarViewShiftDay cs3day = ssIt.next();
-            ret.add(cs3day);
+            CalendarViewShiftDay cvsday = ssIt.next();
+            ret.add(cvsday);
         }
 
         return ret;
@@ -409,17 +296,17 @@ public class Shift extends Model {
                     boolean insertNewRow = true;
                     Iterator<CalendarViewShiftDay> osIt = shifts.iterator();
                     while (osIt.hasNext()) {
-                        CalendarViewShiftDay cs3day = osIt.next();
+                        CalendarViewShiftDay cvsday = osIt.next();
 
                         // Skip over rows that's already full or contained
                         // shifts for each day.
-                        if (cs3day.shifts.size() == viewByDays)
+                        if (cvsday.shifts.size() == viewByDays)
                             continue;
 
                         // Do not allow more than 1 shifts with same start date
                         // on the same row.
                         boolean sameStartDate = false;
-                        Iterator<CalendarViewShift> cvsIt = cs3day.shifts.iterator();
+                        Iterator<CalendarViewShift> cvsIt = cvsday.shifts.iterator();
                         while (cvsIt.hasNext()) {
                             CalendarViewShift cvs = cvsIt.next();
                             if (DateUtils.compare(cvs.start, shift.dateStart) == 0) {
@@ -429,7 +316,7 @@ public class Shift extends Model {
                         }
 
                         if (!sameStartDate) {
-                            cs3day.shifts.add(cs);
+                            cvsday.shifts.add(cs);
                             insertNewRow = false;
                             break;
                         }
@@ -437,9 +324,9 @@ public class Shift extends Model {
 
                     if (insertNewRow) {
                         row++;
-                        CalendarViewShiftDay cs3day = new CalendarViewShiftDay(row);
-                        cs3day.shifts.add(cs);
-                        shifts.add(cs3day);
+                        CalendarViewShiftDay cvsday = new CalendarViewShiftDay(row);
+                        cvsday.shifts.add(cs);
+                        shifts.add(cvsday);
                     }
                 }
             }

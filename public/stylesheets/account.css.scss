@@ -111,6 +111,10 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         width: 100%;
+        a:hover {
+            color: #FE642E;
+            text-decoration: none;
+        }
     }
     ul.rows > li div.action {
         color: #327a9f;

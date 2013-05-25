@@ -98,8 +98,8 @@ Options {
       applyLastClass(div.parent());
     }
 
-    // Creates a 3 dimensional array [month][date][hour] of every hour
-    // between the given start and end dates.
+    // Creates a 3 dimensional array [month][date][hour] of every hour between
+    // the given start and end dates.
     function getHours(start, end) {
       var hours = [];
       hours[start.getMonth()] = [];
@@ -200,8 +200,9 @@ Options {
           var offset = DateUtils.hoursBetween(start, shift.start);
 
           var block = $("<div>", {
-            "class": "calendarview-block",
-            "title": shift.name + ", " + size + " hours",
+            "id": shift.id,
+            "popBgColor": shift.color,
+            "class": "calendarview-block pop",
             "css": {
               "width": ((size * (cellWidth-0.3) - 4)) + "px",
               "margin-left": (offset * (cellWidth-0.3)) + "px",
@@ -335,8 +336,8 @@ Options {
       $("div.calendarview-block-text", block).text(numberOfHours);
 
       // Update tooltip.
-      var data = block.data("block-data");
-      block.attr('title', data.name + ", " + numberOfHours + " hours");
+      //var data = block.data("block-data");
+      //block.attr('title', data.name + ", " + numberOfHours + " hours");
 
       // Remove top and left properties to avoid incorrect block positioning,
       // set position to relative to keep blocks relative to scrollbar when
