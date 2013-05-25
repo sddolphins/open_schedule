@@ -6,7 +6,7 @@
         font-size: 11px;
         line-height: 1em;
         overflow: hidden;
-        
+
         li {
             float: left;
             list-style: none outside none;
@@ -14,17 +14,17 @@
             margin-right: 5px;
         }
     }
-    
+
     .separator {
         padding-top: 30px;
-        
+
         h4 {
             margin-bottom: 0;
             background: url(../images/hr.png) repeat-x scroll left bottom;
-            padding-bottom: 12px;        
-        }        
+            padding-bottom: 12px;
+        }
     }
-    
+
     .content {
         width: 700px;
         margin-bottom: 20px;
@@ -75,7 +75,7 @@
             height: 50px;
             line-height: 50px;
             verflow: hidden;
-            
+
             div.title {
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -114,7 +114,7 @@
                 float: right;
                 padding-right: 20px;
                 padding-top: 5px;
-                
+
                 label {
                     margin-top: 10px;
                     margin-left: 30px;
@@ -127,7 +127,7 @@
             float: left;
         }
 
-        .plan_header:hover {            
+        .plan_header:hover {
             background-color: #ffffff;
         }
 
@@ -136,7 +136,7 @@
 
             form {
                 font-size: 12px;
-                
+
                 .billing_type {
                     margin-right: 4px;
                     margin-top: -4px;

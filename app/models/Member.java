@@ -37,13 +37,14 @@ public class Member extends Model {
     @Column(name = "base_pay")
     public double basePay = 0.0;
 
-    @Column(name = "job_title_id")
-    public int jobTitleId;
-
     @Column(name = "employee_status_id")
     public int employeeStatusId;
 
     public Timestamp dc;
+
+    @OneToOne(targetEntity = JobTitle.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_title_id")
+    public JobTitle jobTitle;
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

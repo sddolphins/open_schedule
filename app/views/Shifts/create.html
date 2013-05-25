@@ -326,6 +326,7 @@
 </div>
 
 #{set 'moreScripts'}
+<script src="@{'/public/javascripts/date.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/bootstrap-datepicker.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/bootstrap-timepicker.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
 <script src="@{'/public/javascripts/prettyCheckable.js'}" type="text/javascript" charset="${_response_encoding}"></script>
@@ -334,21 +335,19 @@
 <script type="text/javascript">
   $(function() {
     // Initialize date picker.
-    $('#startDate')
-      .datepicker()
-      .on('changeDate', function(e) {
-        $('#startDate').datepicker('hide');
-    });
-    $('#endDate')
-      .datepicker()
-      .on('changeDate', function(e) {
-        $('#endDate').datepicker('hide');
-    });
-    $('#signupDate')
-      .datepicker()
-      .on('changeDate', function(e) {
-        $('#signupDate').datepicker('hide');
-    });
+    var dateOptions = {
+          'todayBtn': true,
+          'todayHighlight': true,
+          'autoclose': true
+        };
+    $('#startDate').datepicker(dateOptions);
+    $('#startDate').val(Date.today().toString('MM/dd/yyyy'));
+
+    $('#endDate').datepicker(dateOptions)
+    $('#endDate').val(Date.today().toString('MM/dd/yyyy'));
+
+    $('#signupDate').datepicker(dateOptions);
+    $('#signupDate').val(Date.today().addDays(-7).toString('MM/dd/yyyy'));
 
     // Initialize time picker.
     $('#startTime').timepicker({showMeridian: false});
@@ -370,7 +369,7 @@
         $('div#postable').slideUp();
         $('div#scheduled').slideDown();
       }
-      else {
+      else if ($(this).val() === '3') {
         $('div#scheduled').slideUp();
         $('div#postable').slideUp();
         $('div#selfSchedule').slideDown();

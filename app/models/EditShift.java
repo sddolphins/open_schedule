@@ -13,6 +13,9 @@ public class EditShift {
     public String contact;
     public String comment;
 
+    public EditShift() {
+    }
+
     public EditShift(Shift shift) {
         this.id = shift.id.longValue();
         this.start = shift.dateStart;

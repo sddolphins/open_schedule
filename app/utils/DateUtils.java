@@ -28,4 +28,16 @@ public class DateUtils {
 
         return d1.compareTo(d2);
     }
+
+    /**
+     * Calculate the hours differences between start and end dates.
+     * @param  start - start date.
+     * @param  end   - end date.
+     * @return hours between start and end dates.
+     */
+    public static int duration(Date start, Date end) {
+        long diff = Math.abs(end.getTime() - start.getTime());
+        diff = diff / 1000;
+        return (int)(diff / 3600);
+    }
 }
